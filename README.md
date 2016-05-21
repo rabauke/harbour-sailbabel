@@ -1,8 +1,12 @@
-Babbage
-=======
+SailBabel
+=========
 
-Babbage is a scientific calculator for Sailfish OS.  It evaluates 
-mathematical expressions in standard mathematical notation which may 
-involve mathematical functions as sqrt, sin, cos, etc.
+SailBabel is a dictionary for Sailfish OS.  Note that SailBabel
+does not include translations or wordlists.  Just copy your own
+set of translations to /home/nemo/sailbabel/dictionary.txt.  This
+file is expected to contain two tab-separated columns each containing
+a word or phrase in one language and its translation into another
+language.  Dictionary text files may be downloaded from e.g.
+http://www1.dict.cc/translation_file_request.php?l=e
 
-![screenshot](https://raw.githubusercontent.com/rabauke/harbour-babbage/master/images/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/rabauke/harbour-sailbabel/master/images/screenshot.png)
