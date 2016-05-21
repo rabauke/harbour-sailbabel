@@ -1,0 +1,18 @@
+[Desktop Entry]
+Type=Application
+X-Nemo-Application-Type=silica-qt5
+Icon=harbour-sailbabel
+Exec=harbour-sailbabel
+Name=SailBabel
+Name[dk]=SailBabel
+Name[de]=Wörterbuch
+Name[en]=Dictionary
+Name[es]=SailBabel
+Name[fr]=SailBabel
+Name[it]=SailBabel
+Name[no]=SailBabel
+Name[pl]=SailBabel
+Name[pt]=SailBabel
+Name[fi]=SailBabel
+Name[se]=SailBabel
+Name[ru]=SailBabel
