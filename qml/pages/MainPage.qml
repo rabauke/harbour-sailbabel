@@ -70,16 +70,15 @@ Page {
         EnterKey.onClicked: {
           listModel.clear()
           var trans=dictionary.translateAtoB(text)
-          if (trans.length==0) {
+          for (var i in trans)
+            listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+          if (trans.length>0)
+            listModel.append({ lang1: "", lang2: ""})
+          var trans=dictionary.translateBtoA(text)
+          for (var i in trans)
+            listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+          if (listModel.count==0) {
             listModel.append({ lang1: qsTr("No match in dictionary."), lang2: "" })
-          } else {
-            for (var i in trans)
-              listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
-            if (trans.length>0)
-              listModel.append({ lang1: "", lang2: ""})
-            var trans=dictionary.translateBtoA(text)
-            for (var i in trans)
-              listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
           }
         }
       }
