@@ -18,7 +18,7 @@ class dictionary : public QObject {
   QVector<QByteArray> dict_B;
   QMultiHash<QByteArray, int> map_A;
   QMultiHash<QByteArray, int> map_B;
-  int max_num_results=100;
+  int max_num_results=200;
 public:
   Q_PROPERTY(int size READ size NOTIFY sizeChanged)
   explicit dictionary(QObject *parent = 0);

@@ -4,13 +4,15 @@
 <context>
     <name>MainPage</name>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="58"/>
         <source>Dictionary</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../qml/pages/MainPage.qml" line="66"/>
         <source>Word or phrase</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <source>No match in dictionary.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>

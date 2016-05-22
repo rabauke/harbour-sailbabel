@@ -68,14 +68,22 @@ void dictionary::read() {
         entry_plain_B.count(" ")>3)
       continue;
     dict_A.push_back(entry_A.toUtf8());
+    dict_A.back().squeeze();
     i=whole_word_re.globalMatch(entry_plain_A);
     while (i.hasNext()) {
-      map_A.insert(i.next().captured(0).toUtf8(), dict_A.size()-1);
+      QByteArray word=i.next().captured(0).toUtf8();
+      word.squeeze();
+      map_A.insert(word, dict_A.size()-1);
+      // map_A.insert(i.next().captured(0).toUtf8(), dict_A.size()-1);
     }
     dict_B.push_back(entry_B.toUtf8());
+    dict_B.back().squeeze();
     i=whole_word_re.globalMatch(entry_plain_B);
     while (i.hasNext()) {
-      map_B.insert(i.next().captured(0).toUtf8(), dict_B.size()-1);
+      QByteArray word=i.next().captured(0).toUtf8();
+      word.squeeze();
+      map_B.insert(word, dict_B.size()-1);
+      // map_B.insert(i.next().captured(0).toUtf8(), dict_B.size()-1);
     }
     if (dict_A.size()%1987==0) {
       emit sizeChanged();
@@ -84,6 +92,14 @@ void dictionary::read() {
 //    if (dict_A.size()>50000)
 //      break;
   }
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+  dict_A.squeeze();
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+  dict_B.squeeze();
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+  map_A.squeeze();
+  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
+  map_B.squeeze();
 }
 
 int dictionary::size() const {

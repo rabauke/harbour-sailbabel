@@ -37,6 +37,7 @@ Page {
   id: main_page
 
   property bool showSplash: true
+
   onStatusChanged: {
     if (status == PageStatus.Active && showSplash) {
       showSplash = false
@@ -69,13 +70,17 @@ Page {
         EnterKey.onClicked: {
           listModel.clear()
           var trans=dictionary.translateAtoB(text)
-          for (var i in trans)
-            listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
-          if (trans.length>0)
-            listModel.append({ lang1: "", lang2: ""})
-          var trans=dictionary.translateBtoA(text)
-          for (var i in trans)
-            listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+          if (trans.length==0) {
+            listModel.append({ lang1: qsTr("No match in dictionary."), lang2: "" })
+          } else {
+            for (var i in trans)
+              listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+            if (trans.length>0)
+              listModel.append({ lang1: "", lang2: ""})
+            var trans=dictionary.translateBtoA(text)
+            for (var i in trans)
+              listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+          }
         }
       }
     }
@@ -83,6 +88,7 @@ Page {
     model: ListModel {
       id: listModel
     }
+
     delegate: ListItem {
       width: ListView.view.width
       //height: Theme.itemSizeSmall*1.25
@@ -120,23 +126,8 @@ Page {
             wrapMode: TextEdit.Wrap
             color: Theme.highlightColor
           }
-          //          MenuItem {
-//            text: "Full item"
-//            onClicked: remove()
-//          }
         }
       }
-//      Component {
-//        id: contextMenu
-//        TextArea {
-//          text: lang1+'\n'+lang2
-//          x: Theme.horizontalPageMargin
-//          width: parent.width-2*x
-//          height: Theme.itemSizeSmall*5
-//          readOnly: true
-//          wrapMode: TextEdit.Wrap
-//        }
-//      }
     }
   }
 }
