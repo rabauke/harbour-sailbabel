@@ -9,6 +9,16 @@
     </message>
 </context>
 <context>
+    <name>LoadDictionary</name>
+    <message numerus="yes">
+        <source>%n dictionary entries found.</source>
+        <translation>
+            <numerusform>%n dictionary entry found.</numerusform>
+            <numerusform>%n dictionary entries found.</numerusform>
+        </translation>
+    </message>
+</context>
+<context>
     <name>MainPage</name>
     <message>
         <source>Dictionary</source>

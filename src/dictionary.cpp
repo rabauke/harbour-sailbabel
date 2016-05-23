@@ -99,11 +99,11 @@ void dictionary::read_() {
       word.squeeze();
       map_B.insert(word, dict_B.size()-1);
     }
-    if (dict_A.size()%1000==0) {
+    if (dict_A.size()%1987==0) {
       emit sizeChanged();
     }
-    if (dict_A.size()>50000)
-      break;
+//    if (dict_A.size()>50000)
+//      break;
   }
   dict_A.squeeze();
   dict_B.squeeze();

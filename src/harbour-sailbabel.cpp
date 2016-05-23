@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
   QGuiApplication *app=SailfishApp::application(argc, argv);
   QString locale=QLocale::system().name();
   QTranslator *translator=new QTranslator;
-  if ((translator->load("harbour-babbage."+locale, "/usr/share/harbour-sailbabel/translations")))
+  if ((translator->load("harbour-sailbabel."+locale, "/usr/share/harbour-sailbabel/translations")))
     app->installTranslator(translator);
   qmlRegisterType<dictionary>("harbour.sailbabel.qmlcomponents", 1, 0, "Dictionary");
   QQuickView *view=SailfishApp::createView();

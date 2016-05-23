@@ -5,7 +5,17 @@
     <name>About</name>
     <message>
         <source>_discription_</source>
-        <translation type="unfinished">Wörterbuch für Sailfish OS.</translation>
+        <translation>Wörterbuch für Sailfish OS.</translation>
+    </message>
+</context>
+<context>
+    <name>LoadDictionary</name>
+    <message numerus="yes">
+        <source>%n dictionary entries found.</source>
+        <translation>
+            <numerusform>%n Wörterbucheintrag gefunden.</numerusform>
+            <numerusform>%n Wörterbucheinträge gefunden.</numerusform>
+        </translation>
     </message>
 </context>
 <context>

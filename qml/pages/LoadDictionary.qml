@@ -13,7 +13,7 @@ Page {
   Label {
     anchors.centerIn: parent
     anchors.verticalCenterOffset: busy.height
-    text: "found "+dictionary.size+" phrases"
+    text: qsTr("%n dictionary entries found.", "", dictionary.size)
   }
   onStatusChanged: {
     if (status==PageStatus.Active) {
