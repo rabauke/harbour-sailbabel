@@ -36,19 +36,17 @@ import harbour.sailbabel.qmlcomponents 1.0
 Page {
   id: main_page
 
-  property bool showSplash: true
-
-  onStatusChanged: {
-    if (status == PageStatus.Active && showSplash) {
-      showSplash = false
-      pageStack.push(splashPage)
-    }
-  }
-
   SilicaListView {
     anchors.fill: parent
     id: listView
     VerticalScrollDecorator { flickable: listView }
+
+    PullDownMenu {
+      MenuItem {
+        text: qsTr("About SailBabel")
+        onClicked: pageStack.push(Qt.resolvedUrl("About.qml"))
+      }
+    }
 
     header: Item {
       anchors.horizontalCenter: main_page.Center
@@ -77,10 +75,21 @@ Page {
           var trans=dictionary.translateBtoA(text)
           for (var i in trans)
             listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
-          if (listModel.count==0) {
-            listModel.append({ lang1: qsTr("No match in dictionary."), lang2: "" })
-          }
+          if (listModel.count==0)
+            no_results.visible=true
+          else
+            no_results.visible=false
         }
+      }
+      Text {
+        id: no_results
+        anchors.top: query_field.bottom
+        x: Theme.horizontalPageMargin
+        width: parent.width-2*x
+        text: qsTr("No match in dictionary.")
+        font.italic: true
+        color: Theme.primaryColor
+        visible: false
       }
     }
 
@@ -90,7 +99,6 @@ Page {
 
     delegate: ListItem {
       width: ListView.view.width
-      //height: Theme.itemSizeSmall*1.25
       contentHeight : Theme.itemSizeSmall*1.25
       menu: contextMenu
       Label {

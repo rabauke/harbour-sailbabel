@@ -1,6 +1,10 @@
-#include <QApplication>
-#include <QStandardPaths>
 #include "dictionary.hpp"
+#include <QRegularExpression>
+#include <QRegularExpressionMatchIterator>
+#include <QStandardPaths>
+#include <QFile>
+#include <QSet>
+#include <QDebug>
 
 dictionary::dictionary(QObject *parent) : QObject(parent) {
 }
@@ -35,6 +39,19 @@ void dictionary::purify(const QString &entry, QString &plain) const {
 }
 
 void dictionary::read() {
+  QThread* thread=new QThread;
+  dictionaryloader* worker=new dictionaryloader(*this);
+  worker->moveToThread(thread);
+  // connect(worker, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
+  connect(thread, SIGNAL(started()), worker, SLOT(process()));
+  connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
+  connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
+  connect(thread, SIGNAL(finished()), thread, SLOT(deleteLater()));
+  connect(thread, SIGNAL(finished()), this, SLOT(threadFinished()));
+  thread->start();
+}
+
+void dictionary::read_() {
   dict_A.clear();
   dict_B.clear();
   map_A.clear();
@@ -45,7 +62,6 @@ void dictionary::read() {
     throw std::runtime_error("cannot read file");
   QRegularExpression whole_word_re(R"(([\w]+))",
                                    QRegularExpression::UseUnicodePropertiesOption);
-  // whole_word_re.optimize();
   QString entry_plain_A;
   QString entry_plain_B;
   QRegularExpressionMatchIterator i;
@@ -74,7 +90,6 @@ void dictionary::read() {
       QByteArray word=i.next().captured(0).toUtf8();
       word.squeeze();
       map_A.insert(word, dict_A.size()-1);
-      // map_A.insert(i.next().captured(0).toUtf8(), dict_A.size()-1);
     }
     dict_B.push_back(entry_B.toUtf8());
     dict_B.back().squeeze();
@@ -83,27 +98,25 @@ void dictionary::read() {
       QByteArray word=i.next().captured(0).toUtf8();
       word.squeeze();
       map_B.insert(word, dict_B.size()-1);
-      // map_B.insert(i.next().captured(0).toUtf8(), dict_B.size()-1);
     }
-    if (dict_A.size()%1987==0) {
+    if (dict_A.size()%1000==0) {
       emit sizeChanged();
-      QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
     }
-//    if (dict_A.size()>50000)
-//      break;
+    if (dict_A.size()>50000)
+      break;
   }
-  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
   dict_A.squeeze();
-  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
   dict_B.squeeze();
-  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
   map_A.squeeze();
-  QCoreApplication::processEvents(QEventLoop::ExcludeUserInputEvents);
   map_B.squeeze();
 }
 
 int dictionary::size() const {
-  return dict_A.size();
+  int res;
+  mutex.lock();
+  res=dict_A.size();
+  mutex.unlock();
+  return res;
 }
 
 QVariantList dictionary::translateAtoB(const QString &querry) const {
@@ -214,4 +227,18 @@ QVariantList dictionary::translateBtoA(const QString &querry) const {
       break;
   }
   return result;
+}
+
+void dictionary::threadFinished() {
+  emit readingFinished();
+}
+
+//--------------------------------------------------------------------
+
+dictionaryloader::dictionaryloader(dictionary &dict) : dict(dict){
+}
+
+void dictionaryloader::process() {
+  dict.read_();
+  emit finished();
 }

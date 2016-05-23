@@ -56,9 +56,6 @@ rm -rf %{buildroot}
 # >> install pre
 # << install pre
 %qmake5_install
-# Copy here the blacklisted libraries
-install -d %{buildroot}/usr/share/%{name}/lib
-install -m 644 -p /usr/lib/libQt5Widgets.so.5 %{buildroot}/usr/share/%{name}/lib/
 
 # >> install post
 # << install post

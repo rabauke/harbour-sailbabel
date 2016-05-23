@@ -28,7 +28,7 @@
   SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-import QtQuick 2.0
+import QtQuick 2.2
 import Sailfish.Silica 1.0
 import harbour.sailbabel.qmlcomponents 1.0
 import "pages"
@@ -37,34 +37,12 @@ ApplicationWindow {
 
   Dictionary {
     id: dictionary
+    onReadingFinished: pageStack.replace("pages/MainPage.qml")
   }
 
-  initialPage: Component { MainPage { } }
+  initialPage: Component { LoadDictionary { } }
   cover: Qt.resolvedUrl("cover/CoverPage.qml")
   allowedOrientations: Orientation.All
   _defaultPageOrientations: Orientation.All
 
-  Component {
-    id: splashPage
-
-    Page {
-      BusyIndicator {
-        id: busy
-        size: BusyIndicatorSize.Large
-        anchors.centerIn: parent
-        running: true
-      }
-      Label {
-        anchors.centerIn: parent
-        anchors.verticalCenterOffset: busy.height
-        text: "found "+dictionary.size+" phrases"
-      }
-      onStatusChanged: {
-        if (status == PageStatus.Active) {
-          dictionary.read()
-          pageStack.pop()
-        }
-      }
-    }
-  }
 }

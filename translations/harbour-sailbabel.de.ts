@@ -2,18 +2,29 @@
 <!DOCTYPE TS>
 <TS version="2.1" language="de_DE">
 <context>
+    <name>About</name>
+    <message>
+        <source>_discription_</source>
+        <translation type="unfinished">Wörterbuch für Sailfish OS.</translation>
+    </message>
+</context>
+<context>
     <name>MainPage</name>
     <message>
         <source>Dictionary</source>
-        <translation type="unfinished"></translation>
+        <translation>Wörterbuch</translation>
     </message>
     <message>
         <source>Word or phrase</source>
-        <translation type="unfinished"></translation>
+        <translation>Wort oder Phrase</translation>
     </message>
     <message>
         <source>No match in dictionary.</source>
-        <translation type="unfinished"></translation>
+        <translation>Kein Treffer in Wörterbuch.</translation>
+    </message>
+    <message>
+        <source>About SailBabel</source>
+        <translation>Über SailBabel</translation>
     </message>
 </context>
 </TS>

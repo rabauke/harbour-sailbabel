@@ -17,8 +17,6 @@ CONFIG += sailfishapp
 
 QMAKE_CXXFLAGS += -std=c++11
 
-QT += widgets
-
 SOURCES += src/harbour-sailbabel.cpp \
     src/dictionary.cpp
 
@@ -42,13 +40,14 @@ TRANSLATIONS += translations/harbour-sailbabel.ts \
 
 DISTFILES += qml/harbour-sailbabel.qml \
     qml/pages/MainPage.qml \
-    qml/cover/CoverPage.qml
+    qml/cover/CoverPage.qml \
+    qml/pages/LoadDictionary.qml \
+    qml/pages/About.qml
 
 images.files = images/cover_background.png
 images.path = /usr/share/harbour-sailbabel/images
 INSTALLS += images
 
 HEADERS += \
-    src/math_parser.hpp \
     src/dictionary.hpp
 
