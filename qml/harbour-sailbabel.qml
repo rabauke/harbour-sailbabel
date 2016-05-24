@@ -38,6 +38,7 @@ ApplicationWindow {
   Dictionary {
     id: dictionary
     onReadingFinished: pageStack.replace("pages/MainPage.qml")
+    onReadingError: pageStack.replace("pages/Error.qml")
   }
 
   initialPage: Component { LoadDictionary { } }

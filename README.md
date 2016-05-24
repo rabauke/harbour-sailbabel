@@ -1,7 +1,7 @@
 SailBabel
 =========
 
-SailBabel is a dictionary for Sailfish OS.  Note that SailBabel
+SailBabel is an offline dictionary for Sailfish OS.  Note that SailBabel
 does not include translations or wordlists.  Just copy your own
 set of translations to /home/nemo/sailbabel/dictionary.txt.  This
 file is expected to contain two tab-separated columns each containing

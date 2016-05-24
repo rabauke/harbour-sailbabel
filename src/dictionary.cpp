@@ -42,7 +42,7 @@ void dictionary::read() {
   QThread* thread=new QThread;
   dictionaryloader* worker=new dictionaryloader(*this);
   worker->moveToThread(thread);
-  // connect(worker, SIGNAL(error(QString)), this, SLOT(errorString(QString)));
+  connect(worker, SIGNAL(error(QString)), this, SLOT(error(QString)));
   connect(thread, SIGNAL(started()), worker, SLOT(process()));
   connect(worker, SIGNAL(finished()), thread, SLOT(quit()));
   connect(worker, SIGNAL(finished()), worker, SLOT(deleteLater()));
@@ -233,12 +233,22 @@ void dictionary::threadFinished() {
   emit readingFinished();
 }
 
+void dictionary::error(QString) {
+  emit readingError();
+}
+
+
 //--------------------------------------------------------------------
 
 dictionaryloader::dictionaryloader(dictionary &dict) : dict(dict){
 }
 
 void dictionaryloader::process() {
-  dict.read_();
-  emit finished();
+  try {
+    dict.read_();
+    emit finished();
+  }
+  catch (...) {
+    emit error("unable to read dictionary");
+  }
 }

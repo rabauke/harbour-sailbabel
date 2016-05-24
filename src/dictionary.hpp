@@ -41,8 +41,10 @@ public:
 signals:
   void sizeChanged();
   void readingFinished();
+  void readingError();
 public slots:
   void threadFinished();
+  void error(QString err);
 };
 
 //---------------------------------------------------------------------

@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.1" language="en_US">
+<TS version="2.1">
 <context>
     <name>About</name>
     <message>
         <source>_discription_</source>
-        <translation>Dictionary for Sailfish OS</translation>
+        <translation>Offline dictionary for Sailfish OS.</translation>
+    </message>
+</context>
+<context>
+    <name>Error</name>
+    <message>
+        <source>_error_discription_</source>
+        <translation>SailBabel is an offline dictionary for Sailfish OS.  Note that this program does not include translations or wordlists.  Just copy your own set of translations to /home/nemo/sailbabel/dictionary.txt.  This file is expected to contain two tab-separated columns each containing a word or phrase in one language and its translation into another language.  Dictionary text files may be downloaded from http://www.dict.cc.</translation>
     </message>
 </context>
 <context>
@@ -14,7 +21,6 @@
         <source>%n dictionary entries found.</source>
         <translation>
             <numerusform>%n dictionary entry found.</numerusform>
-            <numerusform>%n dictionary entries found.</numerusform>
         </translation>
     </message>
 </context>
