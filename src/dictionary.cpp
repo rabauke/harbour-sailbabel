@@ -80,9 +80,9 @@ void dictionary::read_() {
       entry_B.remove(0, 3);
     purify(entry_A, entry_plain_A);
     purify(entry_B, entry_plain_B);
-    if (entry_plain_A.count(" ")>3 or
-        entry_plain_B.count(" ")>3)
-      continue;
+//    if (entry_plain_A.count(" ")>3 or
+//        entry_plain_B.count(" ")>3)
+//      continue;
     dict_A.push_back(entry_A.toUtf8());
     dict_A.back().squeeze();
     i=whole_word_re.globalMatch(entry_plain_A);

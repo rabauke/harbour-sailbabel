@@ -25,6 +25,7 @@ Page {
         horizontalAlignment: TextEdit.AlignJustify
         text: qsTr("_error_discription_")
         textFormat: Text.StyledText
+        linkColor: Theme.highlightColor
         onLinkActivated: { Qt.openUrlExternally(link) }
       }
       Label {

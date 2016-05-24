@@ -12,7 +12,7 @@
     <name>Error</name>
     <message>
         <source>_error_discription_</source>
-        <translation>SailBabel is an offline dictionary for Sailfish OS.  Note that this program does not include translations or wordlists.  Just copy your own set of translations to /home/nemo/sailbabel/dictionary.txt.  This file is expected to contain two tab-separated columns each containing a word or phrase in one language and its translation into another language.  Dictionary text files may be downloaded from http://www.dict.cc.</translation>
+        <translation>SailBabel ist ein Offline-Wörterbuch für Sailfish OS.  Dieses Programm beinhaltet jedoch selbst keine Übersetzungen.  Du kannst Deine eigene Liste mit Übersetzungen in der Textdatei /home/nemo/sailbabel/dictionary.txt hinterlegen.  Dazu muss diese Datei zwei durch Tabulatoren getrennte Spalten mit je einem Übersetzungs­paar in jeder Zeile ent­halten.  Geeignete Übersetzungs­listen können zum persönlichen Ge­brauch auch von &lt;a href=&quot;http://www1.dict.cc/translation_file_request.php?l=e&quot;&gt;http://www.dict.cc&lt;/a&gt; be­zogen wer­den.</translation>
     </message>
 </context>
 <context>
