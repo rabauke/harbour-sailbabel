@@ -121,17 +121,21 @@ Page {
         id: contextMenu
         ContextMenu {
           TextArea {
+            id: fullTextLang1
             text: lang1
             width: parent.width
             readOnly: true
             wrapMode: TextEdit.Wrap
+            onClicked: { Clipboard.text=lang1; selectAll(); fullTextLang2.deselect() }
           }
           TextArea {
+            id: fullTextLang2
             text: lang2
             width: parent.width
             readOnly: true
             wrapMode: TextEdit.Wrap
             color: Theme.highlightColor
+            onClicked: { Clipboard.text=lang2; selectAll(); fullTextLang1.deselect() }
           }
         }
       }
