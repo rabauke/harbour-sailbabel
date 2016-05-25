@@ -16,14 +16,17 @@ Page {
       PageHeader {
         title: "SailBabel"
       }
-      TextArea {
-        width: column.width
+      Text {
+        x: Theme.horizontalPageMargin
+        width: column.width-2*x
         color: Theme.primaryColor
-        readOnly: true
         wrapMode: TextEdit.Wrap
         font.pixelSize: Theme.fontSizeMedium
         horizontalAlignment: TextEdit.AlignJustify
         text: qsTr("_discription_")
+        textFormat: Text.StyledText
+        linkColor: Theme.highlightColor
+        onLinkActivated: { Qt.openUrlExternally(link) }
       }
       Label {
         text: "<br>© Heiko Bauke, 2016<br><br>Fork me on github!<br><a href=\"https://github.com/rabauke/harbour-sailbabel\">https://github.com/rabauke/harbour-sailbabel</a>"
