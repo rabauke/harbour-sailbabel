@@ -5,14 +5,29 @@
     <name>About</name>
     <message>
         <source>_discription_</source>
-        <translation>SailBabel ist ein Offline-Wörterbuch für Sailfish OS.  Dieses Programm beinhaltet jedoch selbst keine Über­setzungen.  Du kannst Deine eigene Liste mit Über­setzungen in der Text­datei /home/nemo/sailbabel/dictionary.txt hinter­legen.  Dazu muss diese Datei zwei durch Tabulatoren getrennte Spalten mit je einem Über­setzungs­paar in jeder Zeile ent­halten.  Geeignete Über­setzungs­listen können zum persönlichen Ge­brauch auch von &lt;a href=&quot;http://www1.dict.cc/translation_file_request.php?l=e&quot;&gt;http://www.dict.cc&lt;/a&gt; be­zogen wer­den.  Gebe ein Wort oder eine Phrase in das Text­feld ein, passende Suchergebnisse werden darunter angezeigt.  Lange Wörter­buch­einträge werden gekürzt dar­ge­stellt.  Drücke auf einen Wörter­buch­eintrag, um ihn voll­ständig an­zu­zeigen.  Ein Klick auf den aus­führlichen Wörter­buch­eintrag kopiert ihn in die Zwischen­ablage.</translation>
+        <translation>SailBabel ist ein Offline-Wörterbuch für Sailfish OS.  Dieses Programm beinhaltet jedoch selbst keine Über­setzungen.  Du kannst Deine eigene Liste mit Über­setzungen in einer Text­datei im Verzeichnis Dictionaries innerhalb des Dokumentenordners hinter­legen.  Dazu muss diese Datei zwei durch Tabulatoren getrennte Spalten mit je einem Über­setzungs­paar in jeder Zeile ent­halten.  Geeignete Über­setzungs­listen können zum persönlichen Ge­brauch auch von &lt;a href=&quot;http://www1.dict.cc/translation_file_request.php?l=e&quot;&gt;http://www.dict.cc&lt;/a&gt; be­zogen wer­den.  Gebe ein Wort oder eine Phrase in das Text­feld ein, passende Suchergebnisse werden darunter angezeigt.  Lange Wörter­buch­einträge werden gekürzt dar­ge­stellt.  Drücke auf einen Wörter­buch­eintrag, um ihn voll­ständig an­zu­zeigen.  Ein Klick auf den aus­führlichen Wörter­buch­eintrag kopiert ihn in die Zwischen­ablage.</translation>
+    </message>
+</context>
+<context>
+    <name>ChooseDictionary</name>
+    <message>
+        <source>Choose your dictionary</source>
+        <translation>Wähle ein Wörterbuch</translation>
+    </message>
+    <message>
+        <source>About SailBabel</source>
+        <translation>Über SailBabel</translation>
+    </message>
+    <message>
+        <source>Parent directory</source>
+        <translation>Übergeordneter Ordner</translation>
     </message>
 </context>
 <context>
     <name>Error</name>
     <message>
         <source>_error_discription_</source>
-        <translation>SailBabel ist ein Offline-Wörterbuch für Sailfish OS.  Dieses Programm beinhaltet jedoch selbst keine Über­setzungen.  Du kannst Deine eigene Liste mit Über­setzungen in der Text­datei /home/nemo/sailbabel/dictionary.txt hinter­legen.  Dazu muss diese Datei zwei durch Tabulatoren getrennte Spalten mit je einem Über­setzungs­paar in jeder Zeile ent­halten.  Geeignete Über­setzungs­listen können zum persönlichen Ge­brauch auch von &lt;a href=&quot;http://www1.dict.cc/translation_file_request.php?l=e&quot;&gt;http://www.dict.cc&lt;/a&gt; be­zogen wer­den.</translation>
+        <translation>SailBabel ist ein Offline-Wörterbuch für Sailfish OS.  Dieses Programm beinhaltet jedoch selbst keine Über­setzungen.  Du kannst Deine eigene Liste mit Über­setzungen in einer Text­datei im Verzeichnis Dictionaries innerhalb des Dokumentenordners hinter­legen.  Dazu muss diese Datei zwei durch Tabulatoren getrennte Spalten mit je einem Über­setzungs­paar in jeder Zeile ent­halten.  Geeignete Über­setzungs­listen können zum persönlichen Ge­brauch auch von &lt;a href=&quot;http://www1.dict.cc/translation_file_request.php?l=e&quot;&gt;http://www.dict.cc&lt;/a&gt; be­zogen wer­den.</translation>
     </message>
 </context>
 <context>
@@ -23,6 +38,10 @@
             <numerusform>%n Wörterbucheintrag gefunden.</numerusform>
             <numerusform>%n Wörterbucheinträge gefunden.</numerusform>
         </translation>
+    </message>
+    <message>
+        <source>Reading %1.</source>
+        <translation>Lese %1.</translation>
     </message>
 </context>
 <context>

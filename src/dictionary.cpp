@@ -38,9 +38,9 @@ void dictionary::purify(const QString &entry, QString &plain) const {
   plain.replace(spaces_end_re, "");
 }
 
-void dictionary::read() {
+void dictionary::read(const QString &filename) {
   QThread* thread=new QThread;
-  dictionaryloader* worker=new dictionaryloader(*this);
+  dictionaryloader* worker=new dictionaryloader(*this, filename);
   worker->moveToThread(thread);
   connect(worker, SIGNAL(error(QString)), this, SLOT(error(QString)));
   connect(thread, SIGNAL(started()), worker, SLOT(process()));
@@ -51,13 +51,13 @@ void dictionary::read() {
   thread->start();
 }
 
-void dictionary::read_() {
+void dictionary::read_(const QString &filename) {
   dict_A.clear();
   dict_B.clear();
   map_A.clear();
   map_B.clear();
 
-  QFile file(QStandardPaths::locate(QStandardPaths::HomeLocation, "/sailbabel/dictionary.txt"));
+  QFile file(filename);
   if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     throw std::runtime_error("cannot read file");
   QRegularExpression whole_word_re(R"(([\w]+))",
@@ -87,7 +87,7 @@ void dictionary::read_() {
     dict_A.back().squeeze();
     i=whole_word_re.globalMatch(entry_plain_A);
     while (i.hasNext()) {
-      QByteArray word=i.next().captured(0).toUtf8();
+      QByteArray word=i.next().captured(0).toCaseFolded().toUtf8();
       word.squeeze();
       map_A.insert(word, dict_A.size()-1);
     }
@@ -95,7 +95,7 @@ void dictionary::read_() {
     dict_B.back().squeeze();
     i=whole_word_re.globalMatch(entry_plain_B);
     while (i.hasNext()) {
-      QByteArray word=i.next().captured(0).toUtf8();
+      QByteArray word=i.next().captured(0).toCaseFolded().toUtf8();
       word.squeeze();
       map_B.insert(word, dict_B.size()-1);
     }
@@ -109,6 +109,8 @@ void dictionary::read_() {
   dict_B.squeeze();
   map_A.squeeze();
   map_B.squeeze();
+  if (dict_A.empty() || dict_B.empty())
+    throw std::runtime_error("empty dictionary");
 }
 
 int dictionary::size() const {
@@ -120,7 +122,14 @@ int dictionary::size() const {
 }
 
 QVariantList dictionary::translateAtoB(const QString &querry) const {
-  QStringList querry_list=querry.split(' ', QString::SkipEmptyParts);
+  QString querry_plain;
+  purify(querry, querry_plain);
+  QRegularExpression whole_word_re(R"(([\w]+))",
+                                   QRegularExpression::UseUnicodePropertiesOption);
+  QRegularExpressionMatchIterator i=whole_word_re.globalMatch(querry_plain);
+  QStringList querry_list;
+  while (i.hasNext())
+    querry_list.append(i.next().captured(0).toCaseFolded());
   if (querry_list.empty())
     return QVariantList();
   QVector<QSet<int> > results(std::min(querry_list.size(), 2));
@@ -146,6 +155,7 @@ QVariantList dictionary::translateAtoB(const QString &querry) const {
   for (int i=0; i<hits.size(); ++i) {
     QString plain;
     purify(dict_A[hits[i]], plain);
+    plain=plain.toCaseFolded();
     QString prefix=querry_list[0];
     if (plain.startsWith(prefix))
       scores[i]+=10;
@@ -175,7 +185,14 @@ QVariantList dictionary::translateAtoB(const QString &querry) const {
 }
 
 QVariantList dictionary::translateBtoA(const QString &querry) const {
-  QStringList querry_list=querry.split(' ', QString::SkipEmptyParts);
+  QString querry_plain;
+  purify(querry, querry_plain);
+  QRegularExpression whole_word_re(R"(([\w]+))",
+                                   QRegularExpression::UseUnicodePropertiesOption);
+  QRegularExpressionMatchIterator i=whole_word_re.globalMatch(querry_plain);
+  QStringList querry_list;
+  while (i.hasNext())
+    querry_list.append(i.next().captured(0).toCaseFolded());
   if (querry_list.empty())
     return QVariantList();
   QVector<QSet<int> > results(std::min(querry_list.size(), 2));
@@ -201,6 +218,7 @@ QVariantList dictionary::translateBtoA(const QString &querry) const {
   for (int i=0; i<hits.size(); ++i) {
     QString plain;
     purify(dict_B[hits[i]], plain);
+    plain=plain.toCaseFolded();
     QString prefix=querry_list[0];
     if (plain.startsWith(prefix))
       scores[i]+=10;
@@ -240,12 +258,14 @@ void dictionary::error(QString) {
 
 //--------------------------------------------------------------------
 
-dictionaryloader::dictionaryloader(dictionary &dict) : dict(dict){
+dictionaryloader::dictionaryloader(dictionary &dict, const QString &filename) :
+  dict(dict),
+  filename(filename) {
 }
 
 void dictionaryloader::process() {
   try {
-    dict.read_();
+    dict.read_(filename);
     emit finished();
   }
   catch (...) {

@@ -30,9 +30,9 @@ public:
 private:
   void purify(const QString &entry, QString &plain) const;
 public:
-  Q_INVOKABLE void read();
+  Q_INVOKABLE void read(const QString &filename);
 private:
-  void read_();
+  void read_(const QString &filename);
 public:
   int size() const;
   Q_INVOKABLE QVariantList translateAtoB(const QString &query) const;
@@ -52,9 +52,10 @@ public slots:
 class dictionaryloader : public QObject {
   Q_OBJECT
   dictionary &dict;
+  QString filename;
 public:
-  dictionaryloader(dictionary &dict);
-  virtual ~dictionaryloader() {}
+  dictionaryloader(dictionary &dict, const QString &filename);
+  virtual ~dictionaryloader() { }
 public slots:
   void process();
 signals:

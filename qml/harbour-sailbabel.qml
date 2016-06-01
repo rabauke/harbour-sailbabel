@@ -41,7 +41,9 @@ ApplicationWindow {
     onReadingError: pageStack.replace("pages/Error.qml")
   }
 
-  initialPage: Component { LoadDictionary { } }
+  property string dictionaryFile
+
+  initialPage: Component { ChooseDictionary { } }
   cover: Qt.resolvedUrl("cover/CoverPage.qml")
   allowedOrientations: Orientation.All
   _defaultPageOrientations: Orientation.All

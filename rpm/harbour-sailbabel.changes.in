@@ -1,2 +1,5 @@
 * Sat May 21 2016 Heiko Bauke <heiko.bauke@mail.de> 0.1-1
 - initial version
+
+* Sat June 1 2016 Heiko Bauke <heiko.bauke@mail.de> 0.2-1
+- choose a dictionary file via UI

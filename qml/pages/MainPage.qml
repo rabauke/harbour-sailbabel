@@ -88,6 +88,7 @@ Page {
         width: parent.width-2*x
         text: qsTr("No match in dictionary.")
         font.italic: true
+        font.pointSize: Theme.fontSizeMedium
         color: Theme.primaryColor
         visible: false
       }
@@ -99,8 +100,9 @@ Page {
 
     delegate: ListItem {
       width: ListView.view.width
-      contentHeight : Theme.itemSizeSmall*1.25
+      contentHeight: Theme.itemSizeSmall*1.25
       menu: contextMenu
+      showMenuOnPressAndHold: !(lang1=="" && lang2=="")
       Label {
         id: textLang1
         text: lang1
@@ -126,7 +128,12 @@ Page {
             width: parent.width
             readOnly: true
             wrapMode: TextEdit.Wrap
-            onClicked: { Clipboard.text=lang1; selectAll(); fullTextLang2.deselect() }
+            labelVisible: false
+            onClicked: {
+              Clipboard.text=lang1
+              selectAll()
+              fullTextLang2.deselect()
+            }
           }
           TextArea {
             id: fullTextLang2
@@ -135,7 +142,12 @@ Page {
             readOnly: true
             wrapMode: TextEdit.Wrap
             color: Theme.highlightColor
-            onClicked: { Clipboard.text=lang2; selectAll(); fullTextLang1.deselect() }
+            labelVisible: false
+            onClicked: {
+              Clipboard.text=lang2
+              selectAll()
+              fullTextLang1.deselect()
+            }
           }
         }
       }

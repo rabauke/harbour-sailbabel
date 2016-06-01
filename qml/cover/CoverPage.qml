@@ -42,18 +42,20 @@ CoverBackground {
   }
 
   Column {
-    anchors { top: parent.top;
-      left: parent.left;
-      right: parent.right;
-      topMargin: Theme.paddingLarge;
-      leftMargin: Theme.paddingLarge;
-      rightMargin: Theme.paddingLarge; }
+    anchors {
+      top: parent.top
+      left: parent.left
+      right: parent.right
+      topMargin: Theme.paddingLarge
+      leftMargin: Theme.paddingLarge
+      rightMargin: Theme.paddingLarge
+    }
 
     Item {
       anchors.centerIn: parent
       Text {
         text: "SailBabel"
-        color: Theme.primaryColor
+        color: Theme.highlightColor
         font.pixelSize: Theme.fontSizeMedium
         wrapMode: Text.Wrap
         width: parent.width

@@ -5,9 +5,6 @@
 
 Name:       harbour-sailbabel
 
-# Harbour requirements.
-# %define __requires_exclude ^libQt5Widgets.*$
-
 # >> macros
 # << macros
 
@@ -16,7 +13,7 @@ Name:       harbour-sailbabel
 %{!?qtc_make:%define qtc_make make}
 %{?qtc_builddir:%define _builddir %qtc_builddir}
 Summary:    A dictionary for Sailfish OS
-Version:    0.1
+Version:    0.2
 Release:    1
 Group:      Qt/Qt
 License:    LICENSE
@@ -31,7 +28,7 @@ BuildRequires:  pkgconfig(Qt5Quick)
 BuildRequires:  desktop-file-utils
 
 %description
-A dictionary for Sailfish OS 
+Short description of my SailfishOS Application
 
 
 %prep
