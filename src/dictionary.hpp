@@ -33,6 +33,10 @@ public:
   Q_INVOKABLE void read(const QString &filename);
 private:
   void read_(const QString &filename);
+  QVariantList translate(const QString &query,
+                         const QVector<QByteArray> &dict_A,
+                         const QVector<QByteArray> &dict_B,
+                         const QMultiHash<QByteArray, int> &map_A) const;
 public:
   int size() const;
   Q_INVOKABLE QVariantList translateAtoB(const QString &query) const;

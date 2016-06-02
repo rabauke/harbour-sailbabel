@@ -88,8 +88,8 @@ Page {
         width: parent.width-2*x
         text: qsTr("No match in dictionary.")
         font.italic: true
-        font.pointSize: Theme.fontSizeMedium
-        color: Theme.primaryColor
+        font.pointSize: Theme.fontSizeSmall
+        color: Theme.highlightColor
         visible: false
       }
     }
@@ -99,25 +99,33 @@ Page {
     }
 
     delegate: ListItem {
-      width: ListView.view.width
-      contentHeight: Theme.itemSizeSmall*1.25
+      width: main_page.width // ListView.view.width
+      contentHeight: textLang1.height+textLang2.height+Theme.paddingLarge+Theme.paddingSmall
       menu: contextMenu
       showMenuOnPressAndHold: !(lang1=="" && lang2=="")
-      Label {
-        id: textLang1
-        text: lang1
-        x: Theme.horizontalPageMargin
-        width: parent.width-2*x
-        truncationMode: TruncationMode.Fade
-      }
-      Label {
-        id: textLang2
-        anchors.top: textLang1.bottom
-        text: lang2
-        x: Theme.horizontalPageMargin
-        width: parent.width-2*x
-        truncationMode: TruncationMode.Fade
-        color: Theme.secondaryHighlightColor
+      Item {
+        id: item
+        height: textLang1.height+textLang2.height+Theme.paddingLarge
+        width: parent.width
+        Label {
+          id: textLang1
+          text: lang1
+          x: Theme.horizontalPageMargin
+          width: parent.width-2*x
+          anchors.top: item.top
+          anchors.topMargin: 0.35*Theme.paddingLarge
+          truncationMode: TruncationMode.Fade
+        }
+        Label {
+          id: textLang2
+          text: lang2
+          x: Theme.horizontalPageMargin
+          width: parent.width-2*x
+          anchors.top: textLang1.bottom
+          anchors.topMargin: Theme.paddingSmall
+          truncationMode: TruncationMode.Fade
+          color: Theme.highlightColor
+        }
       }
       Component {
         id: contextMenu
@@ -152,5 +160,7 @@ Page {
         }
       }
     }
+
   }
+
 }

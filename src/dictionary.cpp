@@ -102,8 +102,6 @@ void dictionary::read_(const QString &filename) {
     if (dict_A.size()%1987==0) {
       emit sizeChanged();
     }
-//    if (dict_A.size()>50000)
-//      break;
   }
   dict_A.squeeze();
   dict_B.squeeze();
@@ -121,7 +119,10 @@ int dictionary::size() const {
   return res;
 }
 
-QVariantList dictionary::translateAtoB(const QString &querry) const {
+QVariantList dictionary::translate(const QString &querry,
+                                   const QVector<QByteArray> &dict_A,
+                                   const QVector<QByteArray> &dict_B,
+                                   const QMultiHash<QByteArray, int> &map_A) const {
   QString querry_plain;
   purify(querry, querry_plain);
   QRegularExpression whole_word_re(R"(([\w]+))",
@@ -152,10 +153,13 @@ QVariantList dictionary::translateAtoB(const QString &querry) const {
   QVector<int> hits(results[0].size());
   QVector<int> scores(results[0].size(), 0);
   std::copy(results[0].begin(), results[0].end(), hits.begin());
+  QRegularExpression nonletters_re(R"(([^\s\w]))",
+                                   QRegularExpression::UseUnicodePropertiesOption);
   for (int i=0; i<hits.size(); ++i) {
     QString plain;
     purify(dict_A[hits[i]], plain);
     plain=plain.toCaseFolded();
+    plain.remove(nonletters_re);
     QString prefix=querry_list[0];
     if (plain.startsWith(prefix))
       scores[i]+=10;
@@ -184,67 +188,12 @@ QVariantList dictionary::translateAtoB(const QString &querry) const {
   return result;
 }
 
+QVariantList dictionary::translateAtoB(const QString &querry) const {
+  return translate(querry, dict_A, dict_B, map_A);
+}
+
 QVariantList dictionary::translateBtoA(const QString &querry) const {
-  QString querry_plain;
-  purify(querry, querry_plain);
-  QRegularExpression whole_word_re(R"(([\w]+))",
-                                   QRegularExpression::UseUnicodePropertiesOption);
-  QRegularExpressionMatchIterator i=whole_word_re.globalMatch(querry_plain);
-  QStringList querry_list;
-  while (i.hasNext())
-    querry_list.append(i.next().captured(0).toCaseFolded());
-  if (querry_list.empty())
-    return QVariantList();
-  QVector<QSet<int> > results(std::min(querry_list.size(), 2));
-  for (int k=0; k<1; ++k) {
-    auto i=map_B.find(querry_list[k].toUtf8());
-    while (i!=map_B.end() and i.key()==querry_list[k]) {
-      results[k].insert(*i);
-      ++i;
-    }
-  }
-  for (int k=1; k<querry_list.size(); ++k) {
-    auto i=map_B.find(querry_list[k].toUtf8());
-    results[1].clear();
-    while (i!=map_B.end() and i.key()==querry_list[k]) {
-      results[1].insert(*i);
-      ++i;
-    }
-    results[0].intersect(results[1]);
-  }
-  QVector<int> hits(results[0].size());
-  QVector<int> scores(results[0].size(), 0);
-  std::copy(results[0].begin(), results[0].end(), hits.begin());
-  for (int i=0; i<hits.size(); ++i) {
-    QString plain;
-    purify(dict_B[hits[i]], plain);
-    plain=plain.toCaseFolded();
-    QString prefix=querry_list[0];
-    if (plain.startsWith(prefix))
-      scores[i]+=10;
-    for (int k=1; k<querry_list.size(); ++k) {
-      prefix+=" "+querry_list[k];
-      if (plain.startsWith(prefix))
-        scores[i]+=10;
-      if (plain.contains(prefix))
-        scores[i]+=5;
-    }
-    if (plain==prefix)
-      scores[i]+=5;
-  }
-  QVector<int> indices(results[0].size());
-  std::iota(indices.begin(), indices.end(), 0);
-  std::sort(indices.begin(), indices.end(),
-            [&](int a, int b) -> bool { return scores[a]>scores[b]; });
-  int count=0;
-  QVariantList result;
-  for (auto i: indices) {
-    result.append(QStringList({dict_B[hits[i]], dict_A[hits[i]]}));
-    ++count;
-    if (count==max_num_results)
-      break;
-  }
-  return result;
+  return translate(querry, dict_B, dict_A, map_B);
 }
 
 void dictionary::threadFinished() {
