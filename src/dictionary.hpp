@@ -28,7 +28,7 @@ public:
   Q_PROPERTY(int size READ size NOTIFY sizeChanged)
   explicit dictionary(QObject *parent = 0);
 private:
-  void purify(const QString &entry, QString &plain) const;
+  QString purify(const QString &entry) const;
 public:
   Q_INVOKABLE void read(const QString &filename);
 private:

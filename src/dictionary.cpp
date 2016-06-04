@@ -9,11 +9,11 @@
 dictionary::dictionary(QObject *parent) : QObject(parent) {
 }
 
-void dictionary::purify(const QString &entry, QString &plain) const {
-  plain=entry;
-  plain.clear();
+QString dictionary::purify(const QString &entry) const {
+  QString plain;
+  plain.reserve(entry.size());
   bool in_word_mode=true;
-  char waiting_for;
+  QChar waiting_for;
   for (auto l: entry) {
     if ( in_word_mode and (l=='(' or l=='[' or l=='{' or l=='<')) {
       in_word_mode=false;
@@ -27,15 +27,17 @@ void dictionary::purify(const QString &entry, QString &plain) const {
       in_word_mode=true;
       continue;
     }
-    if (in_word_mode)
-      plain.append(l);
+    if (in_word_mode and (l.isLetter() or l.isSpace()))
+      plain.append(l.toCaseFolded());
   }
   static const QRegularExpression spaces_re(R"(([\s]+))",
                                             QRegularExpression::UseUnicodePropertiesOption);
+  static const QRegularExpression spaces_begin_re(R"((^[\s]+))",
+                                                QRegularExpression::UseUnicodePropertiesOption);
   static const QRegularExpression spaces_end_re(R"(([\s]+$))",
                                                 QRegularExpression::UseUnicodePropertiesOption);
-  plain.replace(spaces_re, " ");
-  plain.replace(spaces_end_re, "");
+  plain.replace(spaces_re, " ").replace(spaces_begin_re, "").replace(spaces_end_re, "");
+  return plain;
 }
 
 void dictionary::read(const QString &filename) {
@@ -60,8 +62,6 @@ void dictionary::read_(const QString &filename) {
   QFile file(filename);
   if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     throw std::runtime_error("cannot read file");
-  QRegularExpression whole_word_re(R"(([\w]+))",
-                                   QRegularExpression::UseUnicodePropertiesOption);
   QString entry_plain_A;
   QString entry_plain_B;
   QRegularExpressionMatchIterator i;
@@ -78,24 +78,22 @@ void dictionary::read_(const QString &filename) {
       entry_A.remove(0, 3);
     if (entry_B.startsWith("to "))
       entry_B.remove(0, 3);
-    purify(entry_A, entry_plain_A);
-    purify(entry_B, entry_plain_B);
+    entry_plain_A=purify(entry_A);
+    entry_plain_B=purify(entry_B);
 //    if (entry_plain_A.count(" ")>3 or
 //        entry_plain_B.count(" ")>3)
 //      continue;
     dict_A.push_back(entry_A.toUtf8());
     dict_A.back().squeeze();
-    i=whole_word_re.globalMatch(entry_plain_A);
-    while (i.hasNext()) {
-      QByteArray word=i.next().captured(0).toCaseFolded().toUtf8();
+    for (const auto &v: entry_plain_A.split(" ", QString::SkipEmptyParts)) {
+      QByteArray word=v.toUtf8();
       word.squeeze();
       map_A.insert(word, dict_A.size()-1);
     }
     dict_B.push_back(entry_B.toUtf8());
     dict_B.back().squeeze();
-    i=whole_word_re.globalMatch(entry_plain_B);
-    while (i.hasNext()) {
-      QByteArray word=i.next().captured(0).toCaseFolded().toUtf8();
+    for (const auto &v: entry_plain_B.split(" ", QString::SkipEmptyParts)) {
+      QByteArray word=v.toUtf8();
       word.squeeze();
       map_B.insert(word, dict_B.size()-1);
     }
@@ -123,64 +121,67 @@ QVariantList dictionary::translate(const QString &querry,
                                    const QVector<QByteArray> &dict_A,
                                    const QVector<QByteArray> &dict_B,
                                    const QMultiHash<QByteArray, int> &map_A) const {
-  QString querry_plain;
-  purify(querry, querry_plain);
-  QRegularExpression whole_word_re(R"(([\w]+))",
-                                   QRegularExpression::UseUnicodePropertiesOption);
-  QRegularExpressionMatchIterator i=whole_word_re.globalMatch(querry_plain);
-  QStringList querry_list;
-  while (i.hasNext())
-    querry_list.append(i.next().captured(0).toCaseFolded());
+  // remove non-letters from query and split into single words
+  QStringList querry_list=purify(querry).split(" ", QString::SkipEmptyParts);
+  // no results if no words in query
   if (querry_list.empty())
     return QVariantList();
-  QVector<QSet<int> > results(std::min(querry_list.size(), 2));
-  for (int k=0; k<1; ++k) {
-    auto i=map_A.find(querry_list[k].toUtf8());
-    while (i!=map_A.end() and i.key()==querry_list[k]) {
-      results[k].insert(*i);
+  // construct intersection of all matches for each single query word
+  QSet<int> results;
+  {
+    auto i=map_A.find(querry_list[0].toUtf8());
+    while (i!=map_A.end() and i.key()==querry_list[0]) {
+      results.insert(*i);
       ++i;
     }
   }
   for (int k=1; k<querry_list.size(); ++k) {
+    QSet<int> further_results;
     auto i=map_A.find(querry_list[k].toUtf8());
-    results[1].clear();
     while (i!=map_A.end() and i.key()==querry_list[k]) {
-      results[1].insert(*i);
+      further_results.insert(*i);
       ++i;
     }
-    results[0].intersect(results[1]);
+    results.intersect(further_results);
   }
-  QVector<int> hits(results[0].size());
-  QVector<int> scores(results[0].size(), 0);
-  std::copy(results[0].begin(), results[0].end(), hits.begin());
-  QRegularExpression nonletters_re(R"(([^\s\w]))",
-                                   QRegularExpression::UseUnicodePropertiesOption);
+  // calculate scores for each match
+  QVector<int> hits(results.size());
+  QVector<int> scores(results.size(), 0);
+  std::copy(results.begin(), results.end(), hits.begin());
+  // combine query words successfully into a string and check if
+  // match contains this string, if yes increase score, in particular,
+  // when match starts with this string
   for (int i=0; i<hits.size(); ++i) {
-    QString plain;
-    purify(dict_A[hits[i]], plain);
-    plain=plain.toCaseFolded();
-    plain.remove(nonletters_re);
+    QString plain=purify(dict_A[hits[i]]);
     QString prefix=querry_list[0];
     if (plain.startsWith(prefix))
-      scores[i]+=10;
+      scores[i]+=6;
+    else if (plain.contains(prefix))
+      scores[i]+=3;
     for (int k=1; k<querry_list.size(); ++k) {
-      prefix+=" "+querry_list[k];
+      prefix+=" ";
+      prefix+=querry_list[k];
       if (plain.startsWith(prefix))
-        scores[i]+=10;
-      if (plain.contains(prefix))
-        scores[i]+=5;
+        scores[i]+=6;
+      else if (plain.contains(prefix))
+        scores[i]+=3;
     }
+    // additional points if there is an exact match
     if (plain==prefix)
-      scores[i]+=5;
+      scores[i]+=2;
+    // prefer short results
+    scores[i]-=plain.count(" ");
   }
-  QVector<int> indices(results[0].size());
+  // indirect sort accoring to scores
+  QVector<int> indices(results.size());
   std::iota(indices.begin(), indices.end(), 0);
   std::sort(indices.begin(), indices.end(),
             [&](int a, int b) -> bool { return scores[a]>scores[b]; });
+  // generate sorted results
   int count=0;
   QVariantList result;
   for (auto i: indices) {
-    result.append(QStringList({dict_A[hits[i]], dict_B[hits[i]]}));
+    result.append(QStringList( { dict_A[hits[i]], dict_B[hits[i]] } ));
     ++count;
     if (count==max_num_results)
       break;
