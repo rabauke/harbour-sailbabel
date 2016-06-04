@@ -31,6 +31,29 @@
     </message>
 </context>
 <context>
+    <name>History</name>
+    <message>
+        <source>Search history</source>
+        <translation>Suchhistorie</translation>
+    </message>
+    <message>
+        <source>Clear search history</source>
+        <translation>Suchhistorie löschen</translation>
+    </message>
+    <message>
+        <source>Clearing search history</source>
+        <translation>Lösche Suchhistorie</translation>
+    </message>
+    <message>
+        <source>Remove query</source>
+        <translation>Lösche Suche</translation>
+    </message>
+    <message>
+        <source>Search again</source>
+        <translation>Suche erneut</translation>
+    </message>
+</context>
+<context>
     <name>LoadDictionary</name>
     <message numerus="yes">
         <source>%n dictionary entries found.</source>

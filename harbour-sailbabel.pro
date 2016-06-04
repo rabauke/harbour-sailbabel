@@ -45,7 +45,8 @@ DISTFILES += qml/harbour-sailbabel.qml \
     qml/pages/LoadDictionary.qml \
     qml/pages/About.qml \
     qml/pages/Error.qml \
-    qml/pages/ChooseDictionary.qml
+    qml/pages/ChooseDictionary.qml \
+    qml/pages/History.qml
 
 images.files = images/cover_background.png
 images.path = /usr/share/harbour-sailbabel/images

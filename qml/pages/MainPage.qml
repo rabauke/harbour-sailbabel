@@ -37,8 +37,10 @@ Page {
   id: main_page
 
   SilicaListView {
-    anchors.fill: parent
     id: listView
+
+    anchors.fill: parent
+
     VerticalScrollDecorator { flickable: listView }
 
     PullDownMenu {
@@ -48,58 +50,65 @@ Page {
       }
     }
 
-    header: Item {
-      anchors.horizontalCenter: main_page.Center
-      height: pageHeader.height+query_field.height
-      width: main_page.width
-      PageHeader {
-        id: pageHeader
-        title: qsTr("Dictionary")
-      }
-      TextField {
-        id: query_field
-        anchors.top: pageHeader.bottom
-        width: parent.width
-        text: ""
-        focus: true
-        placeholderText: qsTr("Word or phrase")
-        inputMethodHints: Qt.ImhNoAutoUppercase
-        EnterKey.enabled: text.length>0
-        EnterKey.onClicked: {
-          listModel.clear()
-          var trans=dictionary.translateAtoB(text)
-          for (var i in trans)
-            listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
-          if (trans.length>0)
-            listModel.append({ lang1: "", lang2: ""})
-          var trans=dictionary.translateBtoA(text)
-          for (var i in trans)
-            listModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
-          if (listModel.count==0)
-            no_results.visible=true
-          else
-            no_results.visible=false
+    Component {
+      id: hearderComponent
+      Item {
+        anchors.horizontalCenter: main_page.Center
+        height: pageHeader.height+queryField.height
+        width: main_page.width
+        PageHeader {
+          id: pageHeader
+          title: qsTr("Dictionary")
+        }
+        TextField {
+          id: queryField
+          anchors.top: pageHeader.bottom
+          width: parent.width
+          text: queryFieldText
+          focus: true
+          placeholderText: qsTr("Word or phrase")
+          inputMethodHints: Qt.ImhNoAutoUppercase
+          EnterKey.enabled: text.length>0
+          EnterKey.onClicked: {
+            queryFieldText=text.replace(/\s\s*/g," ").replace(/^\s*/g,"").replace(/\s*$/g,"")
+            if (searchHistoryListModel.count===0 ||
+                searchHistoryListModel.get(0).query!=text)
+              searchHistoryListModel.insert(0, { query: text })
+            resultsListModel.clear()
+            var trans=dictionary.translateAtoB(text)
+            for (var i in trans)
+              resultsListModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+            if (trans.length>0)
+              resultsListModel.append({ lang1: "", lang2: ""})
+            var trans=dictionary.translateBtoA(text)
+            for (var i in trans)
+              resultsListModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+            if (resultsListModel.count==0)
+              no_results.visible=true
+            else
+              no_results.visible=false
+          }
+        }
+        Text {
+          id: no_results
+          anchors.top: queryField.bottom
+          x: Theme.horizontalPageMargin
+          width: parent.width-2*x
+          text: qsTr("No match in dictionary.")
+          font.italic: true
+          font.pointSize: Theme.fontSizeSmall
+          color: Theme.highlightColor
+          visible: resultsListModel.count==0 && queryFieldText!=""
         }
       }
-      Text {
-        id: no_results
-        anchors.top: query_field.bottom
-        x: Theme.horizontalPageMargin
-        width: parent.width-2*x
-        text: qsTr("No match in dictionary.")
-        font.italic: true
-        font.pointSize: Theme.fontSizeSmall
-        color: Theme.highlightColor
-        visible: false
-      }
     }
 
-    model: ListModel {
-      id: listModel
-    }
+    header: hearderComponent
+
+    model: resultsListModel
 
     delegate: ListItem {
-      width: main_page.width // ListView.view.width
+      width: main_page.width
       contentHeight: textLang1.height+textLang2.height+Theme.paddingLarge+Theme.paddingSmall
       menu: contextMenu
       showMenuOnPressAndHold: !(lang1=="" && lang2=="")

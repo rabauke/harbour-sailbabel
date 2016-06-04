@@ -37,11 +37,24 @@ ApplicationWindow {
 
   Dictionary {
     id: dictionary
-    onReadingFinished: pageStack.replace("pages/MainPage.qml")
+    onReadingFinished: {
+      pageStack.replace("pages/MainPage.qml")
+      pageStack.pushAttached("pages/History.qml")
+    }
     onReadingError: pageStack.replace("pages/Error.qml")
   }
 
+  ListModel {
+    id: searchHistoryListModel
+  }
+
+  ListModel {
+    id: resultsListModel
+  }
+
   property string dictionaryFile
+
+  property string queryFieldText:  ""
 
   initialPage: Component { ChooseDictionary { } }
   cover: Qt.resolvedUrl("cover/CoverPage.qml")
