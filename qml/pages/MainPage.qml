@@ -83,10 +83,6 @@ Page {
             var trans=dictionary.translateBtoA(text)
             for (var i in trans)
               resultsListModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
-            if (resultsListModel.count==0)
-              no_results.visible=true
-            else
-              no_results.visible=false
           }
         }
         Text {
