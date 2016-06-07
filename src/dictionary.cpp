@@ -1,6 +1,4 @@
 #include "dictionary.hpp"
-#include <QRegularExpression>
-#include <QRegularExpressionMatchIterator>
 #include <QStandardPaths>
 #include <QFile>
 #include <QSet>
@@ -27,16 +25,15 @@ QString dictionary::purify(const QString &entry) const {
       in_word_mode=true;
       continue;
     }
-    if (in_word_mode and (l.isLetter() or l.isSpace()))
+    if (in_word_mode and l.isLetter()) {
       plain.append(l.toCaseFolded());
+      continue;
+    }
+    if (in_word_mode and l.isSpace() and (not plain.isEmpty()) and (not plain.endsWith(' ')))
+      plain.append(l);
   }
-  static const QRegularExpression spaces_re(R"(([\s]+))",
-                                            QRegularExpression::UseUnicodePropertiesOption);
-  static const QRegularExpression spaces_begin_re(R"((^[\s]+))",
-                                                QRegularExpression::UseUnicodePropertiesOption);
-  static const QRegularExpression spaces_end_re(R"(([\s]+$))",
-                                                QRegularExpression::UseUnicodePropertiesOption);
-  plain.replace(spaces_re, " ").replace(spaces_begin_re, "").replace(spaces_end_re, "");
+  if (plain.endsWith(' '))
+    plain.chop(1);
   return plain;
 }
 
@@ -58,19 +55,19 @@ void dictionary::read_(const QString &filename) {
   dict_B.clear();
   map_A.clear();
   map_B.clear();
-
   QFile file(filename);
   if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     throw std::runtime_error("cannot read file");
-  QString entry_plain_A;
-  QString entry_plain_B;
-  QRegularExpressionMatchIterator i;
   while (!file.atEnd()) {
-    auto line=file.readLine();
+    QString line(file.readLine());
     if (line.startsWith('#'))
       continue;
+#if QT_VERSION>=0x050400
+    auto line_split=line.splitRef('\t');
+#else
     auto line_split=line.split('\t');
-    if (line_split.size()<3)
+#endif
+    if (line_split.size()<2)
       continue;
     QString entry_A(line_split[0]);
     QString entry_B(line_split[1]);
@@ -78,28 +75,32 @@ void dictionary::read_(const QString &filename) {
       entry_A.remove(0, 3);
     if (entry_B.startsWith("to "))
       entry_B.remove(0, 3);
-    entry_plain_A=purify(entry_A);
-    entry_plain_B=purify(entry_B);
-//    if (entry_plain_A.count(" ")>3 or
-//        entry_plain_B.count(" ")>3)
-//      continue;
     dict_A.push_back(entry_A.toUtf8());
     dict_A.back().squeeze();
-    for (const auto &v: entry_plain_A.split(" ", QString::SkipEmptyParts)) {
+    dict_B.push_back(entry_B.toUtf8());
+    dict_B.back().squeeze();
+    QString entry_plain_A=purify(entry_A);
+    QString entry_plain_B=purify(entry_B);
+#if QT_VERSION>=0x050400
+    for (const auto &v: entry_plain_A.splitRef(' ', QString::SkipEmptyParts)) {
+#else
+    for (const auto &v: entry_plain_A.split(' ', QString::SkipEmptyParts)) {
+#endif
       QByteArray word=v.toUtf8();
       word.squeeze();
       map_A.insert(word, dict_A.size()-1);
     }
-    dict_B.push_back(entry_B.toUtf8());
-    dict_B.back().squeeze();
-    for (const auto &v: entry_plain_B.split(" ", QString::SkipEmptyParts)) {
+#if QT_VERSION>=0x050400
+    for (const auto &v: entry_plain_B.splitRef(' ', QString::SkipEmptyParts)) {
+#else
+    for (const auto &v: entry_plain_B.split(' ', QString::SkipEmptyParts)) {
+#endif
       QByteArray word=v.toUtf8();
       word.squeeze();
       map_B.insert(word, dict_B.size()-1);
     }
-    if (dict_A.size()%1987==0) {
+    if (dict_A.size()%2477==0)
       emit sizeChanged();
-    }
   }
   dict_A.squeeze();
   dict_B.squeeze();
@@ -122,7 +123,7 @@ QVariantList dictionary::translate(const QString &querry,
                                    const QVector<QByteArray> &dict_B,
                                    const QMultiHash<QByteArray, int> &map_A) const {
   // remove non-letters from query and split into single words
-  QStringList querry_list=purify(querry).split(" ", QString::SkipEmptyParts);
+  QStringList querry_list=purify(querry).split(' ', QString::SkipEmptyParts);
   // no results if no words in query
   if (querry_list.empty())
     return QVariantList();

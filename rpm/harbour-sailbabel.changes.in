@@ -5,3 +5,6 @@
 - choose a dictionary file via UI
 - search history
 
+* Sat June 12 2016 Heiko Bauke <heiko.bauke@mail.de> 0.3-1
+- load dictionary faster
+- minor fixes
