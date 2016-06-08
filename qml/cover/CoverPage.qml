@@ -67,7 +67,6 @@ CoverBackground {
     }
     Text {
       anchors.bottom: parent.bottom
-      //anchors.bottomMargin: Theme.paddingMedium
       text: basename(dictionaryFile)
       color: Theme.highlightColor
       font.pixelSize: Theme.fontSizeMedium

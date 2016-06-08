@@ -2,7 +2,7 @@
 #include <QStandardPaths>
 #include <QFile>
 #include <QSet>
-#include <QDebug>
+#include <QRegularExpression>
 
 dictionary::dictionary(QObject *parent) : QObject(parent) {
 }
@@ -163,9 +163,11 @@ QVariantList dictionary::translate(const QString &querry,
   for (int i=0; i<hits.size(); ++i) {
     QString plain=purify(dict_A[hits[i]]);
     QString prefix=querry_list[0];
-    if (plain.startsWith(prefix))
+    if (plain.startsWith(prefix)) {
       scores[i]+=6;
-    else if (plain.contains(prefix))
+      if (QString(dict_A[hits[i]]).toCaseFolded().contains(QRegularExpression("^"+prefix+"\\S")))
+        scores[i]-=2;
+    } else if (plain.contains(prefix))
       scores[i]+=3;
     for (int k=1; k<querry_list.size(); ++k) {
       prefix+=" ";
