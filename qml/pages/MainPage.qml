@@ -135,31 +135,61 @@ Page {
       Component {
         id: contextMenu
         ContextMenu {
-          TextArea {
-            id: fullTextLang1
-            text: lang1
+          Item {
             width: parent.width
-            readOnly: true
-            wrapMode: TextEdit.Wrap
-            labelVisible: false
-            onClicked: {
-              Clipboard.text=lang1
-              selectAll()
-              fullTextLang2.deselect()
+            height: fullTextLang1.height
+            TextArea {
+              id: fullTextLang1
+              text: lang1
+              width: parent.width-Theme.iconSizeMedium-Theme.paddingMedium
+              readOnly: true
+              wrapMode: TextEdit.Wrap
+              labelVisible: false
+              onClicked: {
+                Clipboard.text=lang1
+                selectAll()
+                fullTextLang2.deselect()
+                clipboard1.visible=true
+                clipboard2.visible=false
+              }
+            }
+            Image {
+              id: clipboard1
+              anchors.left: fullTextLang1.right
+              anchors.leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
+              anchors.top: fullTextLang1.top
+              anchors.topMargin: Theme.paddingSmall
+              source: "image://theme/icon-m-clipboard?"+Theme.highlightColor
+              visible: false
             }
           }
-          TextArea {
-            id: fullTextLang2
-            text: lang2
+          Item {
             width: parent.width
-            readOnly: true
-            wrapMode: TextEdit.Wrap
-            color: Theme.highlightColor
-            labelVisible: false
-            onClicked: {
-              Clipboard.text=lang2
-              selectAll()
-              fullTextLang1.deselect()
+            height: fullTextLang2.height
+            TextArea {
+              id: fullTextLang2
+              text: lang2
+              width: parent.width-Theme.iconSizeMedium-Theme.paddingMedium
+              readOnly: true
+              wrapMode: TextEdit.Wrap
+              color: Theme.highlightColor
+              labelVisible: false
+              onClicked: {
+                Clipboard.text=lang2
+                selectAll()
+                fullTextLang1.deselect()
+                clipboard1.visible=false
+                clipboard2.visible=true
+              }
+            }
+            Image {
+              id: clipboard2
+              anchors.left: fullTextLang2.right
+              anchors.leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
+              anchors.top: fullTextLang2.top
+              anchors.topMargin: Theme.paddingSmall
+              source: "image://theme/icon-m-clipboard?"+Theme.highlightColor
+              visible: false
             }
           }
         }
