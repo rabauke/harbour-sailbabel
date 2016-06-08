@@ -13,24 +13,31 @@ QString dictionary::purify(const QString &entry) const {
   bool in_word_mode=true;
   QChar waiting_for;
   for (auto l: entry) {
-    if ( in_word_mode and (l=='(' or l=='[' or l=='{' or l=='<')) {
-      in_word_mode=false;
-      if (l=='(') waiting_for=')';
-      else if (l=='[') waiting_for=']';
-      else if (l=='{') waiting_for='}';
-      else if (l=='<') waiting_for='>';
-      continue;
+    if (in_word_mode) {
+      if (l.isLetter()) {
+        plain.append(l.toCaseFolded());
+        continue;
+      }
+      if (l.isSpace() and (not plain.endsWith(' ')) and (not plain.isEmpty())) {
+        plain.append(l);
+        continue;
+      }
+      if (l=='(') {
+        waiting_for=')'; in_word_mode=false; continue;
+      }
+      if (l=='[') {
+        waiting_for=']'; in_word_mode=false; continue;
+      }
+      if (l=='{') {
+        waiting_for='}'; in_word_mode=false; continue;
+      }
+      if (l=='<') {
+        waiting_for='>'; in_word_mode=false; continue;
+      }
+    } else {
+      if (l==waiting_for)
+        in_word_mode=true;
     }
-    if ( (not in_word_mode) and l==waiting_for) {
-      in_word_mode=true;
-      continue;
-    }
-    if (in_word_mode and l.isLetter()) {
-      plain.append(l.toCaseFolded());
-      continue;
-    }
-    if (in_word_mode and l.isSpace() and (not plain.isEmpty()) and (not plain.endsWith(' ')))
-      plain.append(l);
   }
   if (plain.endsWith(' '))
     plain.chop(1);
@@ -102,6 +109,7 @@ void dictionary::read_(const QString &filename) {
     if (dict_A.size()%2477==0)
       emit sizeChanged();
   }
+  emit sizeChanged();
   dict_A.squeeze();
   dict_B.squeeze();
   map_A.squeeze();
