@@ -141,7 +141,7 @@ Page {
             TextArea {
               id: fullTextLang1
               text: lang1
-              width: parent.width-Theme.iconSizeMedium-Theme.paddingMedium
+              width: Screen.sizeCategory>=Screen.Large ? parent.width-Theme.iconSizeMedium-Theme.paddingMedium :  parent.width-Theme.iconSizeSmall-Theme.paddingMedium
               readOnly: true
               wrapMode: TextEdit.Wrap
               labelVisible: false
@@ -159,7 +159,7 @@ Page {
               anchors.leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
               anchors.top: fullTextLang1.top
               anchors.topMargin: Theme.paddingSmall
-              source: "image://theme/icon-m-clipboard?"+Theme.highlightColor
+              source: Screen.sizeCategory>=Screen.Large ? "image://theme/icon-m-clipboard?"+Theme.highlightColor : "image://theme/icon-s-clipboard?"+Theme.highlightColor
               visible: false
             }
           }
@@ -169,7 +169,7 @@ Page {
             TextArea {
               id: fullTextLang2
               text: lang2
-              width: parent.width-Theme.iconSizeMedium-Theme.paddingMedium
+              width: Screen.sizeCategory>=Screen.Large ? parent.width-Theme.iconSizeMedium-Theme.paddingMedium :  parent.width-Theme.iconSizeSmall-Theme.paddingMedium
               readOnly: true
               wrapMode: TextEdit.Wrap
               color: Theme.highlightColor
@@ -188,7 +188,7 @@ Page {
               anchors.leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
               anchors.top: fullTextLang2.top
               anchors.topMargin: Theme.paddingSmall
-              source: "image://theme/icon-m-clipboard?"+Theme.highlightColor
+              source: Screen.sizeCategory>=Screen.Large ? "image://theme/icon-m-clipboard?"+Theme.highlightColor : "image://theme/icon-s-clipboard?"+Theme.highlightColor
               visible: false
             }
           }
