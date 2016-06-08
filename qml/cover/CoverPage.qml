@@ -33,6 +33,10 @@ import Sailfish.Silica 1.0
 
 CoverBackground {
 
+  function basename(str) {
+    return str.slice(str.lastIndexOf("/")+1)
+  }
+
   Image {
     source: "/usr/share/harbour-sailbabel/images/cover_background.png"
     x: 0; y: parent.height-parent.width-Theme.paddingLarge; z: -1
@@ -41,28 +45,36 @@ CoverBackground {
     height: parent.width
   }
 
-  Column {
+  Item {
     anchors {
       top: parent.top
+      bottom: parent.bottom
       left: parent.left
       right: parent.right
       topMargin: Theme.paddingLarge
+      bottomMargin: 1.25*Theme.paddingLarge
       leftMargin: Theme.paddingLarge
       rightMargin: Theme.paddingLarge
     }
-
-    Item {
-      anchors.centerIn: parent
-      Text {
-        text: "SailBabel"
-        color: Theme.highlightColor
-        font.pixelSize: Theme.fontSizeMedium
-        wrapMode: Text.Wrap
-        width: parent.width
-        horizontalAlignment: Text.AlignHCenter
-      }
+    Text {
+      id: title
+      text: "SailBabel"
+      color: Theme.highlightColor
+      font.pixelSize: Theme.fontSizeMedium
+      wrapMode: Text.Wrap
+      width: parent.width
+      horizontalAlignment: Text.AlignHCenter
     }
-
+    Text {
+      anchors.bottom: parent.bottom
+      //anchors.bottomMargin: Theme.paddingMedium
+      text: basename(dictionaryFile)
+      color: Theme.highlightColor
+      font.pixelSize: Theme.fontSizeMedium
+      wrapMode: Text.Wrap
+      width: parent.width
+      horizontalAlignment: Text.AlignHCenter
+    }
   }
 
 }
