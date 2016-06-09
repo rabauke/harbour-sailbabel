@@ -18,6 +18,8 @@ QString dictionary::purify(const QString &entry) const {
         plain.append(l.toCaseFolded());
         continue;
       }
+      if (l=='-')
+        l=' ';
       if (l.isSpace() and (not plain.endsWith(' ')) and (not plain.isEmpty())) {
         plain.append(l);
         continue;

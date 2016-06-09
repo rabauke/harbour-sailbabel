@@ -155,10 +155,12 @@ Page {
             }
             Image {
               id: clipboard1
-              anchors.left: fullTextLang1.right
-              anchors.leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
-              anchors.top: fullTextLang1.top
-              anchors.topMargin: Theme.paddingSmall
+              anchors {
+                verticalCenter: fullTextLang1.top
+                verticalCenterOffset: fullTextLang1.textVerticalCenterOffset
+                left: fullTextLang1.right
+                leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
+              }
               source: Screen.sizeCategory>=Screen.Large ? "image://theme/icon-m-clipboard?"+Theme.highlightColor : "image://theme/icon-s-clipboard?"+Theme.highlightColor
               visible: false
             }
@@ -184,10 +186,12 @@ Page {
             }
             Image {
               id: clipboard2
-              anchors.left: fullTextLang2.right
-              anchors.leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
-              anchors.top: fullTextLang2.top
-              anchors.topMargin: Theme.paddingSmall
+              anchors {
+                verticalCenter: fullTextLang2.top
+                verticalCenterOffset: fullTextLang2.textVerticalCenterOffset
+                left: fullTextLang2.right
+                leftMargin: Theme.paddingMedium-Theme.horizontalPageMargin
+              }
               source: Screen.sizeCategory>=Screen.Large ? "image://theme/icon-m-clipboard?"+Theme.highlightColor : "image://theme/icon-s-clipboard?"+Theme.highlightColor
               visible: false
             }

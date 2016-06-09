@@ -75,7 +75,7 @@
     </message>
     <message>
         <source>Word or phrase</source>
-        <translation>Wort oder Phrase</translation>
+        <translation>Wort oder Wortgruppe</translation>
     </message>
     <message>
         <source>No match in dictionary.</source>
