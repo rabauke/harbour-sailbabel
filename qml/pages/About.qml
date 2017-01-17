@@ -23,7 +23,7 @@ Page {
         wrapMode: TextEdit.Wrap
         font.pixelSize: Theme.fontSizeMedium
         horizontalAlignment: TextEdit.AlignJustify
-        text: qsTr("_discription_")
+        text: qsTr("_description_")
         textFormat: Text.StyledText
         linkColor: Theme.highlightColor
         onLinkActivated: { Qt.openUrlExternally(link) }
