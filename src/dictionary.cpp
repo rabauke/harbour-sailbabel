@@ -64,6 +64,7 @@ void dictionary::read_(const QString &filename) {
   dict_B.clear();
   map_A.clear();
   map_B.clear();
+  emit dictChanged();
   QFile file(filename);
   if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     throw std::runtime_error("cannot read file");

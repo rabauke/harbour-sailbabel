@@ -48,6 +48,14 @@ Page {
         text: qsTr("About SailBabel")
         onClicked: pageStack.push(Qt.resolvedUrl("About.qml"))
       }
+      MenuItem {
+        text: qsTr("Change Dictionary")
+        onClicked: {
+            pageStack.push(Qt.resolvedUrl("ChooseDictionary.qml"))
+            resultsListModel.clear()
+            queryFieldText=""
+        }
+      }
     }
 
     Component {

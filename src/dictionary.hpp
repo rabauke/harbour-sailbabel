@@ -27,6 +27,7 @@ class dictionary : public QObject {
 public:
   Q_PROPERTY(int size READ size NOTIFY sizeChanged)
   explicit dictionary(QObject *parent = 0);
+  Q_PROPERTY(bool dictionaryLoaded READ isDict NOTIFY dictChanged)
 private:
   QString purify(const QString &entry) const;
 public:
@@ -39,11 +40,13 @@ private:
                          const QMultiHash<QByteArray, int> &map_A) const;
 public:
   int size() const;
+  bool isDict(){return dict_A.empty() || dict_B.empty();};
   Q_INVOKABLE QVariantList translateAtoB(const QString &query) const;
   Q_INVOKABLE QVariantList translateBtoA(const QString &query) const;
   virtual ~dictionary() {}
 signals:
   void sizeChanged();
+  void dictChanged();
   void readingFinished();
   void readingError();
 public slots:
