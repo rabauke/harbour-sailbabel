@@ -19,6 +19,8 @@ class dictionary : public QObject {
   QVector<QByteArray> dict_B;
   QMultiHash<QByteArray, int> map_A;
   QMultiHash<QByteArray, int> map_B;
+  QString lang_A;
+  QString lang_B;
   int max_num_results=200;
   mutable QMutex mutex;
 
@@ -28,6 +30,8 @@ public:
   Q_PROPERTY(int size READ size NOTIFY sizeChanged)
   explicit dictionary(QObject *parent = 0);
   Q_PROPERTY(bool dictionaryLoaded READ dictEmpty NOTIFY dictChanged)
+  Q_PROPERTY(QString langFrom READ langFrom NOTIFY sizeChanged)
+  Q_PROPERTY(QString langTo READ langTo NOTIFY sizeChanged)
 private:
   QString purify(const QString &entry) const;
 public:
@@ -40,6 +44,8 @@ private:
                          const QMultiHash<QByteArray, int> &map_A) const;
 public:
   int size() const;
+  QString langFrom() const {return lang_A;}
+  QString langTo() const {return lang_B;}
   bool dictEmpty(){return dict_A.empty() || dict_B.empty();}
   Q_INVOKABLE QVariantList translateAtoB(const QString &query) const;
   Q_INVOKABLE QVariantList translateBtoA(const QString &query) const;

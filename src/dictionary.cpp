@@ -64,14 +64,29 @@ void dictionary::read_(const QString &filename) {
   dict_B.clear();
   map_A.clear();
   map_B.clear();
+  lang_A="";
+  lang_B="";
   emit dictChanged();
   QFile file(filename);
   if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     throw std::runtime_error("cannot read file");
   while (!file.atEnd()) {
     QString line(file.readLine());
-    if (line.startsWith('#'))
-      continue;
+    if (line.startsWith('#')){
+        /* Checking for type of dictionary
+         * assuming the first line of the dictionary contains a string like:
+         * langA-langB vocabulary database  compiled by dict.cc
+        */
+        QRegularExpression re("(?<langA>[A-Z]+)-(?<langB>[A-Z]+)");
+        QRegularExpressionMatch langs = re.match(line);
+        if(langs.hasMatch()){
+            if(!lang_A.isEmpty() && !lang_B.isEmpty()){
+                qDebug("Warning, overwriting the identities of languages. Are there two comments defining the languages in the dictionary file?");
+            }
+            lang_A=langs.captured("langA").toLatin1();
+            lang_B=langs.captured("langB").toLatin1();
+        }
+    }
 #if QT_VERSION>=0x050400
     auto line_split=line.splitRef('\t');
 #else

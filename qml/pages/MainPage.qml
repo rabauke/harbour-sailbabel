@@ -66,7 +66,7 @@ Page {
         width: main_page.width
         PageHeader {
           id: pageHeader
-          title: qsTr("Dictionary")
+          title: qsTr("Dictionary "+dictionary.langFrom+" -> "+dictionary.langTo)
         }
         TextField {
           id: queryField
