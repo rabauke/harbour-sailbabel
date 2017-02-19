@@ -74,7 +74,7 @@
         <translation>Wörterbuch</translation>
     </message>
     <message>
-        <source>Change Dictionary</source>
+        <source>Change dictionary</source>
         <translation>Wörterbuch wechseln</translation>
     </message>
     <message>

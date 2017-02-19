@@ -70,8 +70,8 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>Change Dictionary</source>
-        <translation>Change Dictionary</translation>
+        <source>Change dictionary</source>
+        <translation>Change dictionary</translation>
     </message>
     <message>
         <source>Dictionary</source>

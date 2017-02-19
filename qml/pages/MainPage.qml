@@ -49,7 +49,7 @@ Page {
         onClicked: pageStack.push(Qt.resolvedUrl("About.qml"))
       }
       MenuItem {
-        text: qsTr("Change Dictionary")
+        text: qsTr("Change dictionary")
         onClicked: {
             pageStack.push(Qt.resolvedUrl("ChooseDictionary.qml"))
             resultsListModel.clear()

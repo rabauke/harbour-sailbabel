@@ -8,3 +8,6 @@
 * Sat June 9 2016 Heiko Bauke <heiko.bauke@mail.de> 0.3-1
 - load dictionary faster
 - minor fixes and enhancements
+
+* Sun February 19 2017 Heiko Bauke <heiko.bauke@mail.de> 0.4-1
+- change dictionary without closing the app

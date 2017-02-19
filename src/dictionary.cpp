@@ -117,7 +117,7 @@ void dictionary::read_(const QString &filename) {
   dict_B.squeeze();
   map_A.squeeze();
   map_B.squeeze();
-  if (dict_A.empty() || dict_B.empty())
+  if (dict_A.empty() or dict_B.empty())
     throw std::runtime_error("empty dictionary");
 }
 
