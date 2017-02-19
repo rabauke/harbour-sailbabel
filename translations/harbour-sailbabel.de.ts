@@ -74,6 +74,10 @@
         <translation>Wörterbuch</translation>
     </message>
     <message>
+        <source>Change Dictionary</source>
+        <translation>Wörterbuch wechseln</translation>
+    </message>
+    <message>
         <source>Word or phrase</source>
         <translation>Wort oder Wortgruppe</translation>
     </message>
