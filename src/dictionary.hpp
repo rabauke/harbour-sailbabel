@@ -9,6 +9,7 @@
 #include <QVector>
 #include <QMultiHash>
 #include <QVariantList>
+#include "sqlquerymodel.h"
 
 class dictionary;
 class dictionaryloader;
@@ -23,7 +24,6 @@ class dictionary : public QObject {
   QString lang_B;
   int max_num_results=200;
   mutable QMutex mutex;
-
   friend class dictionaryloader;
 
 public:
@@ -34,6 +34,7 @@ public:
   Q_PROPERTY(QString langTo READ langTo NOTIFY sizeChanged)
 private:
   QString purify(const QString &entry) const;
+  void generateQuery(QString entry,QMultiHash<QByteArray, int> &map,QVector<QByteArray> dict,QString lang,QString langFrom, QString langTo,int def_id);
 public:
   Q_INVOKABLE void read(const QString &filename);
 private:
@@ -50,11 +51,13 @@ public:
   Q_INVOKABLE QVariantList translateAtoB(const QString &query) const;
   Q_INVOKABLE QVariantList translateBtoA(const QString &query) const;
   virtual ~dictionary() {}
+  void openDB(QUrl offlineStoragePath,QString dbname);
 signals:
   void sizeChanged();
   void dictChanged();
   void readingFinished();
   void readingError();
+  void initDB();
 public slots:
   void threadFinished();
   void error(QString err);

@@ -74,10 +74,6 @@
         <translation>Change Dictionary</translation>
     </message>
     <message>
-        <source>Dictionary</source>
-        <translation>Dictionary</translation>
-    </message>
-    <message>
         <source>Word or phrase</source>
         <translation>Word or phrase</translation>
     </message>

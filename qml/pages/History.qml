@@ -58,15 +58,7 @@ Page {
             text: qsTr("Search again")
             onClicked: {
               queryFieldText=searchHistoryListModel.get(model.index).query
-              resultsListModel.clear()
-              var trans=dictionary.translateAtoB(queryFieldText)
-              for (var i in trans)
-                resultsListModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
-              if (trans.length>0)
-                resultsListModel.append({ lang1: "", lang2: ""})
-              var trans=dictionary.translateBtoA(queryFieldText)
-              for (var i in trans)
-                resultsListModel.append({ lang1: trans[i][0], lang2: trans[i][1] })
+                main_page.searchQuery(queryFieldText)
               pageStack.navigateBack()
             }
           }

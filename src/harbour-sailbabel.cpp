@@ -35,6 +35,9 @@
 #include <sailfishapp.h>
 #include "dictionary.hpp"
 #include "folderlistmodel.hpp"
+#include <QtSql/QSqlQuery>
+#include <QtSql/QSqlTableModel>
+#include "sqlquerymodel.h"
 
 int main(int argc, char *argv[]) {
   QGuiApplication *app=SailfishApp::application(argc, argv);
@@ -43,9 +46,20 @@ int main(int argc, char *argv[]) {
   if ((translator->load("harbour-sailbabel."+locale, "/usr/share/harbour-sailbabel/translations")))
     app->installTranslator(translator);
   qmlRegisterType<dictionary>("harbour.sailbabel.qmlcomponents", 1, 0, "Dictionary");
+  qmlRegisterType<SqlQueryModel>("harbour.sailbabel.qmlcomponents", 1, 0, "SqlQueryModel");
   qmlRegisterType<FolderListModel>("harbour.sailbabel.qmlcomponents", 1, 0, "FolderListModel");
   QQuickView *view=SailfishApp::createView();
+  // connect to db
+  const QUrl offlineStoragePath = QUrl::fromLocalFile(view->engine()->offlineStoragePath());
+  view->rootContext()->setContextProperty("offlineStoragePath", offlineStoragePath);
+  const QString dbname="sailbabelDB";
+  view->rootContext()->setContextProperty("dbName", dbname);
+
+  // start app
   view->setSource(SailfishApp::pathTo("qml/harbour-sailbabel.qml"));
   view->show();
+  // open the DB after initializing the main page, as it needs functions defined there
+  dictionary *d = new dictionary();
+  d->openDB(offlineStoragePath,dbname);
   return app->exec();
 }

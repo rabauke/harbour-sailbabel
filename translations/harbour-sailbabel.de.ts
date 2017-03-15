@@ -70,8 +70,8 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>Dictionary</source>
-        <translation>Wörterbuch</translation>
+        <source>Erase Dictionary</source>
+        <translation>Lösche das Worterbuch</translation>
     </message>
     <message>
         <source>Change Dictionary</source>

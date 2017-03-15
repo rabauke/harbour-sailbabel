@@ -15,11 +15,14 @@ TARGET = harbour-sailbabel
 CONFIG += c++11
 CONFIG += sailfishapp
 
+QT +=sql
+
 QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += src/harbour-sailbabel.cpp \
     src/dictionary.cpp \
-    src/folderlistmodel.cpp
+    src/folderlistmodel.cpp \
+    src/sqlquerymodel.cpp
 
 OTHER_FILES += qml/harbour-sailbabel.qml \
     qml/cover/CoverPage.qml \
@@ -54,5 +57,6 @@ INSTALLS += images
 
 HEADERS += \
     src/dictionary.hpp \
-    src/folderlistmodel.hpp
+    src/folderlistmodel.hpp \
+    src/sqlquerymodel.h
 

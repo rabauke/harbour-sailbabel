@@ -74,8 +74,8 @@
         <translation>Change Dictionary</translation>
     </message>
     <message>
-        <source>Dictionary</source>
-        <translation>Dictionary</translation>
+        <source>Erase Dictionary</source>
+        <translation>Erase Dictionary</translation>
     </message>
     <message>
         <source>Word or phrase</source>
