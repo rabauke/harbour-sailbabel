@@ -51,6 +51,8 @@ Page {
       MenuItem {
         text: qsTr("Erase Dictionary")
         onClicked: {
+            mdl.clear()
+            queryFieldText=""
             eraseDB()
         }
       }
@@ -231,12 +233,6 @@ Page {
       tx.executeSql("create table if not exists words (WID integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,"+
                     "word varchar(250),"+
                     "lang varchar(5)) ");
-      // Add (another) greeting row
-      tx.executeSql("insert into definitions (definition1,lang1,definition2,lang2) values(?,?,?,?)", [ 'tizio','L3', 'caio',"L4" ]);
-      tx.executeSql("insert into words (word,lang) values(?,?)", [ 'tizio','L3' ]);
-      tx.executeSql("insert into words (word,lang) values(?,?)", [ 'caio',"L4" ]);
-      tx.executeSql("insert into occurrences (langFrom, langTo, wordId, defId) values(?,?,?,?)", [ 'L3','L4', '1','1' ]);
-      tx.executeSql("insert into occurrences (langFrom, langTo, wordId, defId) values(?,?,?,?)", [ 'L3','L4', '2','1' ]);
   }
 
   function openDB() {

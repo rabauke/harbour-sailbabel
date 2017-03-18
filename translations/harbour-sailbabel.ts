@@ -85,5 +85,9 @@
         <source>About SailBabel</source>
         <translation>About SailBabel</translation>
     </message>
+    <message>
+        <source>Erase Dictionary</source>
+        <translation>Erase Dictionary</translation>
+    </message>
 </context>
 </TS>

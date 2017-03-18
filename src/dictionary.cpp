@@ -11,6 +11,7 @@
 #include <QDebug>
 
 dictionary::dictionary(QObject *parent) : QObject(parent) {
+    dicSize=0;
 }
 
 QString dictionary::purify(const QString &entry) const {
@@ -72,6 +73,18 @@ void dictionary::read_(const QString &filename) {
     throw std::runtime_error("cannot read file");
   lang_A="";
   lang_B="";
+  QSqlDatabase::database().transaction();
+  // Improve performance significantly by doing all operations in memory
+  //QSqlQuery("PRAGMA journal_mode = OFF");
+  //QSqlQuery("PRAGMA synchronous = OFF");
+  QSqlQuery q_del_def,q_del_occ,q_sel_def,q_ins_def,q_sel_word,q_ins_word,q_ins_occ;
+  q_del_def.prepare("DELETE FROM definitions WHERE lang1 = ? AND lang2 = ?");
+  q_del_occ.prepare("DELETE FROM occurrences WHERE langFrom = ? AND langTo = ?");
+  q_sel_def.prepare("SELECT DID FROM definitions WHERE definition1 = ? AND lang1 = ? AND definition2 = ? AND lang2 = ?");
+  q_ins_def.prepare("INSERT INTO definitions (definition1, lang1,definition2, lang2) VALUES (?,?,?,?)");
+  q_sel_word.prepare("SELECT WID FROM words WHERE word = ? AND lang = ?");
+  q_ins_word.prepare("INSERT INTO words (word, lang) VALUES (?, ?)");
+  q_ins_occ.prepare("INSERT INTO occurrences (langFrom,langTo,wordId,defId) VALUES (?,?,?,?)");
   QString line(file.readLine());
   if (line.startsWith('#')){
       /* Checking for type of dictionary
@@ -88,18 +101,18 @@ void dictionary::read_(const QString &filename) {
           lang_B=langs.captured("langB").toLatin1();
       }
   }
+  int cnt=0;
   if(lang_A.isEmpty() && lang_B.isEmpty()){
       qDebug("Warning, unable to determine languages. Are languages described in the first line of the dictionary file?");
   } else {
-      dict_A.clear();
-      dict_B.clear();
-      map_A.clear();
-      map_B.clear();
-      QSqlQuery query;
+      dicSize=0;
       // delete all old entries with the same languages
-      query.exec("DELETE FROM definitions WHERE lang1 = '"+lang_A+"' AND lang2 = '"+lang_B+"'");
-      query.exec("DELETE FROM occurrences WHERE langFrom = '"+lang_A+"' AND langTo = '"+lang_B+"'");
-      int cnt=0;
+      q_del_def.bindValue(0,lang_A);
+      q_del_def.bindValue(1,lang_B);
+      q_del_def.exec();
+      q_del_occ.bindValue(0,lang_A);
+      q_del_occ.bindValue(1,lang_B);
+      q_del_occ.exec();
       while (!file.atEnd()) {
           cnt++;
           line=file.readLine();
@@ -118,74 +131,85 @@ void dictionary::read_(const QString &filename) {
               entry_A.remove(0, 3);
           if (entry_B.startsWith("to "))
               entry_B.remove(0, 3);
-//          qDebug("entryA: "+entry_A.toLatin1());
-//          qDebug("entryB: "+entry_B.toLatin1());
-//          dict_A.push_back(entry_A.toUtf8());
-//          dict_A.back().squeeze();
-//          dict_B.push_back(entry_B.toUtf8());
-//          dict_B.back().squeeze();
           QString entry_plain_A=purify(entry_A);
           QString entry_plain_B=purify(entry_B);
-          QString q=QString("SELECT DID FROM definitions WHERE ")+
-                  "definition1 = '"+entry_A.toUtf8()+"' AND lang1 = '"+lang_A+"' AND "+
-                  "definition2 = '"+entry_B.toUtf8()+"' AND lang2 = '"+lang_B+"') ";
-          query.exec(q);
+          //query.prepare("SELECT DID FROM definitions WHERE definition1 = ? AND lang1 = ? AND definition2 = ? AND lang2 = ?");
+          q_sel_def.bindValue(0,entry_A);
+          q_sel_def.bindValue(2,entry_B);
+          q_sel_def.bindValue(1,lang_A);
+          q_sel_def.bindValue(3,lang_B);
+          if(!q_sel_def.exec())
+              qDebug()<<"Failure";
           int def_id=-1; // assume each word is unique, consider only the first occurrence
-          if(query.first()){ //the record exists
-              QVariant res=query.value(0);
+          if(q_sel_def.first()){ //the record exists
+              QVariant res=q_sel_def.value(0);
               def_id=res.toInt();
           } else { //insert a new record
-              query.exec("INSERT INTO definitions (definition1, lang1,definition2, lang2) VALUES ('"+entry_A.toUtf8()+"', '"+lang_A+"','"+entry_B.toUtf8()+"', '"+lang_B+"')");
-              def_id=query.lastInsertId().toInt();
+              //query.prepare("INSERT INTO definitions (definition1, lang1,definition2, lang2) VALUES (?,?,?,?)");
+              q_ins_def.bindValue(0,entry_A);
+              q_ins_def.bindValue(1,lang_A);
+              q_ins_def.bindValue(2,entry_B);
+              q_ins_def.bindValue(3,lang_B);
+              if(!q_ins_def.exec())
+                  qDebug()<<"Failure";
+              def_id=q_ins_def.lastInsertId().toInt();
           }
-          if(query.next()){
+          if(q_sel_def.next()){
               qDebug("Warning: duplicate entry for definition "+entry_A.toUtf8()+" and "+entry_B.toUtf8());
-          }          
-          generateQuery(entry_plain_A,map_A,dict_A,lang_A,lang_A, lang_B,def_id);
-          generateQuery(entry_plain_B,map_B,dict_B,lang_B,lang_A, lang_B,def_id);
-
+          }
+          generateQuery(q_sel_word,q_ins_word,q_ins_occ,entry_plain_A,lang_A,lang_A, lang_B,def_id);
+          generateQuery(q_sel_word,q_ins_word,q_ins_occ,entry_plain_B,lang_B,lang_A, lang_B,def_id);
           QByteArray word_full=entry_A.toUtf8();
           word_full.squeeze();
           QByteArray translation_full=entry_B.toUtf8();
           translation_full.squeeze();
-          if (cnt%1000==0)
-              emit sizeChanged();          
+          if (cnt%100==0){
+              dicSize=cnt;
+              emit sizeChanged();
+          }
       }
+      QSqlDatabase::database().commit();
       emit sizeChanged();
-//      dict_A.squeeze();
-//      dict_B.squeeze();
-//      map_A.squeeze();
-//      map_B.squeeze();
-//      if (dict_A.empty() || dict_B.empty())
-//          throw std::runtime_error("empty dictionary");
   }
 }
 
-void dictionary::generateQuery(QString entry,QMultiHash<QByteArray, int> &map,QVector<QByteArray> dict,QString lang,QString langFrom, QString langTo,int def_id) {
+void dictionary::generateQuery(QSqlQuery q_sel_word,QSqlQuery q_ins_word,QSqlQuery q_ins_occ,
+                               QString entry,QString lang,QString langFrom, QString langTo,int def_id) {
 #if QT_VERSION>=0x050400
     for (const auto &v: entry.splitRef(' ', QString::SkipEmptyParts)) {
 #else
     for (const auto &v: entry.split(' ', QString::SkipEmptyParts)) {
 #endif
-        QByteArray word=v.toUtf8();
-        word.squeeze();
-//        map.insert(word, dict.size()-1);
-        QString q="SELECT WID FROM words WHERE word = '"+word+"' AND lang = '"+lang+"'";
+        QString word=v;
         QSqlQuery query;
-        query.exec(q);
+        //query.prepare("SELECT WID FROM words WHERE word = ? AND lang = ?");
+        q_sel_word.bindValue(0,word);
+        q_sel_word.bindValue(1,lang);
+        if(!q_sel_word.exec())
+            qDebug()<<"Failure";
         int word_id=-1; // assume each word is unique, consider only the first occurrence
-        if(query.first()){ //the record exists
-            QVariant res=query.value(0);
+        if(q_sel_word.first()){ //the record exists
+            QVariant res=q_sel_word.value(0);
             word_id=res.toInt();
         } else { //insert a new record
-            query.exec("INSERT INTO words (word, lang) VALUES ('"+word+"', '"+lang+"')");
-            word_id=query.lastInsertId().toInt();
+            //query.prepare("INSERT INTO words (word, lang) VALUES (?, ?)");
+            q_ins_word.bindValue(0,word);
+            q_ins_word.bindValue(1,lang);
+            if(!q_ins_word.exec())
+                qDebug()<<"Failure";
+            word_id=q_ins_word.lastInsertId().toInt();
         }
-        if(query.next()){
-            qDebug("Warning: duplicate entry for word "+word+" and lang "+lang.toLatin1());
+        if(q_sel_word.next()){
+            qDebug("Warning: duplicate entry for word "+word.toLatin1()+" and lang "+lang.toLatin1());
         }
         if(def_id!=-1 and word_id!=-1){
-            query.exec("INSERT INTO occurrences (langFrom,langTo,wordId,defId) VALUES ('"+langFrom+"','"+langTo+"',"+QString::number(word_id)+","+QString::number(def_id)+")");
+            //query.prepare("INSERT INTO occurrences (langFrom,langTo,wordId,defId) VALUES (?,?,?,?)");
+            q_ins_occ.bindValue(0,langFrom);
+            q_ins_occ.bindValue(1,langTo);
+            q_ins_occ.bindValue(2,word_id);
+            q_ins_occ.bindValue(3,def_id);
+            if(!q_ins_occ.exec())
+                qDebug()<<"Failure";
         } else {
             qDebug("Warning: invalid indexes");
         }
@@ -193,93 +217,7 @@ void dictionary::generateQuery(QString entry,QMultiHash<QByteArray, int> &map,QV
 }
 
 int dictionary::size() const {
-  int res;
-  mutex.lock();
-  res=dict_A.size();
-  mutex.unlock();
-  return res;
-}
-
-QVariantList dictionary::translate(const QString &querry,
-                                   const QVector<QByteArray> &dict_A,
-                                   const QVector<QByteArray> &dict_B,
-                                   const QMultiHash<QByteArray, int> &map_A) const {
-  // remove non-letters from query and split into single words
-  QStringList querry_list=purify(querry).split(' ', QString::SkipEmptyParts);
-  // no results if no words in query
-  if (querry_list.empty())
-    return QVariantList();
-  // construct intersection of all matches for each single query word
-  QSet<int> results;
-  {
-    auto i=map_A.find(querry_list[0].toUtf8());
-    while (i!=map_A.end() and i.key()==querry_list[0]) {
-      results.insert(*i);
-      ++i;
-    }
-  }
-  for (int k=1; k<querry_list.size(); ++k) {
-    QSet<int> further_results;
-    auto i=map_A.find(querry_list[k].toUtf8());
-    while (i!=map_A.end() and i.key()==querry_list[k]) {
-      further_results.insert(*i);
-      ++i;
-    }
-    results.intersect(further_results);
-  }
-  // calculate scores for each match
-  QVector<int> hits(results.size());
-  QVector<int> scores(results.size(), 0);
-  std::copy(results.begin(), results.end(), hits.begin());
-  // combine query words successfully into a string and check if
-  // match contains this string, if yes increase score, in particular,
-  // when match starts with this string
-  for (int i=0; i<hits.size(); ++i) {
-    QString plain=purify(dict_A[hits[i]]);
-    QString prefix=querry_list[0];
-    if (plain.startsWith(prefix)) {
-      scores[i]+=6;
-      if (QString(dict_A[hits[i]]).toCaseFolded().contains(QRegularExpression("^"+prefix+"\\S")))
-        scores[i]-=2;
-    } else if (plain.contains(prefix))
-      scores[i]+=3;
-    for (int k=1; k<querry_list.size(); ++k) {
-      prefix+=" ";
-      prefix+=querry_list[k];
-      if (plain.startsWith(prefix))
-        scores[i]+=6;
-      else if (plain.contains(prefix))
-        scores[i]+=3;
-    }
-    // additional points if there is an exact match
-    if (plain==prefix)
-      scores[i]+=2;
-    // prefer short results
-    scores[i]-=plain.count(" ");
-  }
-  // indirect sort accoring to scores
-  QVector<int> indices(results.size());
-  std::iota(indices.begin(), indices.end(), 0);
-  std::sort(indices.begin(), indices.end(),
-            [&](int a, int b) -> bool { return scores[a]>scores[b]; });
-  // generate sorted results
-  int count=0;
-  QVariantList result;
-  for (auto i: indices) {
-    result.append(QStringList( { dict_A[hits[i]], dict_B[hits[i]] } ));
-    ++count;
-    if (count==max_num_results)
-      break;
-  }
-  return result;
-}
-
-QVariantList dictionary::translateAtoB(const QString &querry) const {
-  return translate(querry, dict_A, dict_B, map_A);
-}
-
-QVariantList dictionary::translateBtoA(const QString &querry) const {
-  return translate(querry, dict_B, dict_A, map_B);
+  return dicSize;
 }
 
 void dictionary::threadFinished() {
