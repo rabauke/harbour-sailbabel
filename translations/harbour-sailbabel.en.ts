@@ -74,10 +74,6 @@
         <translation>Change Dictionary</translation>
     </message>
     <message>
-        <source>Erase Dictionary</source>
-        <translation>Erase Dictionary</translation>
-    </message>
-    <message>
         <source>Word or phrase</source>
         <translation>Word or phrase</translation>
     </message>
@@ -88,6 +84,14 @@
     <message>
         <source>About SailBabel</source>
         <translation>About SailBabel</translation>
+    </message>
+    <message>
+        <source>Erasing database</source>
+        <translation>Erasing database</translation>
+    </message>
+    <message>
+        <source>Erase Dictionary</source>
+        <translation>Erase Dictionary</translation>
     </message>
 </context>
 </TS>

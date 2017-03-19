@@ -71,8 +71,8 @@ void dictionary::read_(const QString &filename) {
   QFile file(filename);
   if (not file.open(QIODevice::ReadOnly | QIODevice::Text))
     throw std::runtime_error("cannot read file");
-  lang_A="";
-  lang_B="";
+  QString lang_A="";
+  QString lang_B="";
   QSqlDatabase::database().transaction();
   // Improve performance significantly by doing all operations in memory
   //QSqlQuery("PRAGMA journal_mode = OFF");
@@ -170,6 +170,7 @@ void dictionary::read_(const QString &filename) {
       }
       QSqlDatabase::database().commit();
       emit sizeChanged();
+      emit initLangs();
   }
 }
 
@@ -260,6 +261,7 @@ void dictionary::openDB(QUrl offlineStoragePath,QString dbname){
     db.setDatabaseName(dbPath);
     if ( db.open ( )) {
         qDebug("connected");
+        emit initLangs();
     }
 }
 

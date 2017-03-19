@@ -48,9 +48,15 @@ ApplicationWindow {
     id: searchHistoryListModel
   }
 
+  ListModel {
+      id :dictionaries
+  }
+
   property string dictionaryFile
 
   property string queryFieldText:  ""
+
+  property string coverTitle: "N/A"
 
   initialPage: Component { MainPage { } }
   cover: Qt.resolvedUrl("cover/CoverPage.qml")

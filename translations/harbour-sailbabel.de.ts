@@ -70,10 +70,6 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>Erase Dictionary</source>
-        <translation>Lösche das Worterbuch</translation>
-    </message>
-    <message>
         <source>Change Dictionary</source>
         <translation>Wörterbuch wechseln</translation>
     </message>
@@ -88,6 +84,14 @@
     <message>
         <source>About SailBabel</source>
         <translation>Über SailBabel</translation>
+    </message>
+    <message>
+        <source>Erasing database</source>
+        <translation>Lösche die Datenbank</translation>
+    </message>
+    <message>
+        <source>Erase Dictionary</source>
+        <translation>Wörterbuch löschen</translation>
     </message>
 </context>
 </TS>

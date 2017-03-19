@@ -48,20 +48,23 @@ Page {
         text: qsTr("About SailBabel")
         onClicked: pageStack.push(Qt.resolvedUrl("About.qml"))
       }
+      RemorsePopup { id: remorse_erase }
       MenuItem {
         text: qsTr("Erase Dictionary")
-        onClicked: {
-            mdl.clear()
-            queryFieldText=""
-            eraseDB()
-        }
+        onClicked: remorse_erase.execute(qsTr("Erasing database"),
+                                         function() {
+                                             mdl.clear()
+                                             dictionaries.clear()
+                                             queryFieldText=""
+                                             eraseDB()
+                                         })
       }
       MenuItem {
         text: qsTr("Change Dictionary")
         onClicked: {
-            pageStack.push(Qt.resolvedUrl("ChooseDictionary.qml"))
-            //resultsListModel.clear()
+            pageStack.replace(Qt.resolvedUrl("ChooseDictionary.qml"))
             mdl.clear()
+            dictionaries.clear()
             queryFieldText=""
         }
       }
@@ -75,7 +78,7 @@ Page {
         width: main_page.width
         PageHeader {
           id: pageHeader
-          title: qsTr("Dictionary "+dictionary.langFrom+" -> "+dictionary.langTo)
+          title: pageTitle
         }
 
         TextField {
@@ -216,6 +219,7 @@ Page {
   }
 
   property var db : null
+  property string pageTitle: ""
 
   function initDB(tx) {
 
@@ -239,6 +243,26 @@ Page {
       main_page.db = LocalStorage.openDatabaseSync(dbName, "1.0", "SailBabel's database", 1000000);
         console.log("Opening DB")
       main_page.db.transaction(initDB)
+      main_page.db.transaction(listDictsInDB)
+  }
+
+  function listDictsInDB(tx){
+      main_page.db.transaction(
+                  function(tx) {
+                      dictionaries.clear()
+                      var langs = tx.executeSql("SELECT DISTINCT lang1,lang2 FROM definitions");
+                      for(var i = 0; i < langs.rows.length; i++) {
+                          dictionaries.append({"l1":langs.rows.item(i).lang1,"l2":langs.rows.item(i).lang2})
+                          console.log("Dict: "+dictionaries.get(i).l1+" "+dictionaries.get(i).l2)
+                      }
+                      if(langs.rows.length>0){
+                          pageTitle="Dictionary "+dictionaries.get(0).l1+"->"+dictionaries.get(0).l2
+                          coverTitle=""
+                      } else {
+                          pageTitle="No dictionary loaded"
+                          coverTitle="Not loaded"
+                      }
+                  })
   }
 
   function eraseDB(){
@@ -248,6 +272,8 @@ Page {
       tx.executeSql("DROP TABLE if exists words");
       tx.executeSql("DROP TABLE if exists occurrences");
                   })
+      coverTitle="Not Loaded"
+      pageTitle="No dictionary loaded"
       main_page.db.transaction(initDB)
   }
 
@@ -284,8 +310,10 @@ Page {
   Connections {
       target: dictionary
       onInitDB:{
-          console.log("Emitted")
           openDB()
+      }
+      onInitLangs:{
+          listDictsInDB()
       }
   }
 

@@ -67,7 +67,7 @@ CoverBackground {
     }
     Text {
       anchors.bottom: parent.bottom
-      text: basename(dictionary.langFrom+"->"+dictionary.langTo)
+      text: basename(coverTitle)
       color: Theme.highlightColor
       font.pixelSize: Theme.fontSizeMedium
       wrapMode: Text.Wrap

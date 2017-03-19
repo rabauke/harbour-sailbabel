@@ -16,8 +16,6 @@ class dictionaryloader;
 
 class dictionary : public QObject {
   Q_OBJECT
-  QString lang_A;
-  QString lang_B;
   int dicSize;
   int max_num_results=200;
   friend class dictionaryloader;
@@ -25,8 +23,6 @@ class dictionary : public QObject {
 public:
   Q_PROPERTY(int size READ size NOTIFY sizeChanged)
   explicit dictionary(QObject *parent = 0);
-  Q_PROPERTY(QString langFrom READ langFrom NOTIFY sizeChanged)
-  Q_PROPERTY(QString langTo READ langTo NOTIFY sizeChanged)
 private:
   QString purify(const QString &entry) const;
   void generateQuery(QSqlQuery q_sel_word,QSqlQuery q_ins_word,QSqlQuery q_ins_occ,QString entry,QString lang,QString langFrom, QString langTo,int def_id);
@@ -36,8 +32,6 @@ private:
   void read_(const QString &filename);
 public:
   int size() const;
-  QString langFrom() const {return lang_A;}
-  QString langTo() const {return lang_B;}
   virtual ~dictionary() {}
   void openDB(QUrl offlineStoragePath,QString dbname);
 signals:
@@ -46,6 +40,7 @@ signals:
   void readingFinished();
   void readingError();
   void initDB();
+  void initLangs();
 public slots:
   void threadFinished();
   void error(QString err);

@@ -86,6 +86,10 @@
         <translation>About SailBabel</translation>
     </message>
     <message>
+        <source>Erasing database</source>
+        <translation>Erasing database</translation>
+    </message>
+    <message>
         <source>Erase Dictionary</source>
         <translation>Erase Dictionary</translation>
     </message>
