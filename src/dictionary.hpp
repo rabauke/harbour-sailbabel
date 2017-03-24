@@ -16,6 +16,8 @@ class dictionaryloader;
 
 class dictionary : public QObject {
   Q_OBJECT
+  QMultiHash<QByteArray, int> map_A;
+  QMultiHash<QByteArray, int> map_B;
   int dicSize;
   int max_num_results=200;
   friend class dictionaryloader;
@@ -25,7 +27,8 @@ public:
   explicit dictionary(QObject *parent = 0);
 private:
   QString purify(const QString &entry) const;
-  void generateQuery(QSqlQuery q_sel_word,QSqlQuery q_ins_word,QSqlQuery q_ins_occ,QString entry,QString lang,QString langFrom, QString langTo,int def_id);
+  void generateQuery(QMultiHash<QByteArray, int> map,QSqlQuery q_ins_word,QSqlQuery q_ins_occ,QString lang,QString langFrom, QString langTo);
+  void updateMap(QMultiHash<QByteArray, int> &map,QString entry,int def_id);
 public:
   Q_INVOKABLE void read(const QString &filename);
 private:
