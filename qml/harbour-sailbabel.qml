@@ -56,7 +56,8 @@ ApplicationWindow {
 
   property string queryFieldText:  ""
 
-  property string coverTitle: "N/A"
+  property string loadingTitle: "N/A"
+  property string loadingSubtitle: "N/A"
 
   initialPage: Component { MainPage { } }
   cover: Qt.resolvedUrl("cover/CoverPage.qml")

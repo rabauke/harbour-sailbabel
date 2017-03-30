@@ -102,12 +102,17 @@ void dictionary::read_(const QString &filename) {
           lang_A=langs.captured("langA").toLatin1();
           lang_B=langs.captured("langB").toLatin1();
       }
-  }
+  } 
+  loadingTitle="Reading "+lang_A+"->"+lang_B;
+  loadingSubtitle="0 dictionary entries found";
+  coverTitle="0";
+  emit sizeChanged();
   int cnt=0;
   if(lang_A.isEmpty() && lang_B.isEmpty()){
       qDebug("Warning, unable to determine languages. Are languages described in the first line of the dictionary file?");
   } else {
       dicSize=0;
+      dicProgress=0;
       // delete all old entries with the same languages
       q_del_def.bindValue(0,lang_A);
       q_del_def.bindValue(1,lang_B);
@@ -145,14 +150,21 @@ void dictionary::read_(const QString &filename) {
           updateMap(map_A,entry_plain_A,def_id);
           updateMap(map_B,entry_plain_B,def_id);
           if (cnt%100==0){
-              dicSize=cnt;
+              dicProgress=cnt;
+              loadingSubtitle=QString::number(dicProgress)+" dictionary entries found";
+              coverTitle="reading\n"+QString::number(dicProgress)+"\nentries";
               emit sizeChanged();
           }
       }
-      // insert words and associations
+      loadingTitle="Importing terms";
+      dicProgress=0;
+      dicSize=int(map_A.size()+map_B.size());
+      loadingSubtitle="0 out of "+QString::number(dicSize);
+      coverTitle="0\n/\n"+QString::number(dicSize);
       generateQuery(map_A,q_ins_word,q_ins_occ, lang_A, lang_A,lang_B);
       generateQuery(map_B,q_ins_word,q_ins_occ, lang_B, lang_A,lang_B);
       QSqlDatabase::database().commit();
+      coverTitle=lang_A+" -> "+lang_B;
       emit sizeChanged();
       emit initLangs();
   }
@@ -174,10 +186,16 @@ void dictionary::generateQuery(QMultiHash<QByteArray, int> map,QSqlQuery q_ins_w
                                QString lang,QString langFrom, QString langTo) {
     QString lastKey="";
     QList<int> values;
+    values.clear();
     int word_id=-1;
     for (QMultiHash<QByteArray, int>::iterator i = map.begin(); i != map.end(); ++i){
         QString k=i.key();
         int v=i.value();
+        if (dicProgress%1000==0){
+            loadingSubtitle=QString::number(dicProgress)+" terms imported out of "+QString::number(dicSize);
+            coverTitle="importing\n"+QString::number(dicProgress)+"\nterms out of\n"+QString::number(dicSize);
+            emit sizeChanged();
+        }
         if(k!=lastKey){ // add a new word
             lastKey=k;
             values.clear();
@@ -202,12 +220,25 @@ void dictionary::generateQuery(QMultiHash<QByteArray, int> map,QSqlQuery q_ins_w
                 qDebug("Warning: invalid indexes");
             }
         } // if the entry is duplicated, do nothing
+        dicProgress++;
     }
 }
 
 int dictionary::size() const {
   return dicSize;
 }
+int dictionary::progress() const {
+  return dicProgress;
+}
+
+QString dictionary::getTitle() const
+{return loadingTitle;}
+QString dictionary::getSubtitle() const
+{return loadingSubtitle;}
+QString dictionary::getCover() const
+{return coverTitle;}
+void dictionary::setCover(QString c)
+{coverTitle=c;}
 
 void dictionary::threadFinished() {
   emit readingFinished();

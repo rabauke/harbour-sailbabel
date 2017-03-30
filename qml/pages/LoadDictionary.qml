@@ -20,7 +20,7 @@ Page {
     id: label1
     anchors.centerIn: parent
     anchors.verticalCenterOffset: 1.25*busy.height
-    text: qsTr("Reading %1.").arg(basename(dictionaryFile))
+    text: dictionary.loadingTitle
     color: Theme.highlightColor
   }
   Label {
@@ -28,7 +28,7 @@ Page {
     anchors.horizontalCenter: label1.horizontalCenter
     anchors.top: label1.bottom
     anchors.topMargin: Theme.paddingMedium
-    text: qsTr("%n dictionary entries found.", "", dictionary.size)
+    text: dictionary.loadingSubtitle
     color: Theme.highlightColor
   }
   onStatusChanged: {

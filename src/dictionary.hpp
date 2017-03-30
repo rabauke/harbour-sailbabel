@@ -19,11 +19,19 @@ class dictionary : public QObject {
   QMultiHash<QByteArray, int> map_A;
   QMultiHash<QByteArray, int> map_B;
   int dicSize;
+  int dicProgress;
   int max_num_results=200;
   friend class dictionaryloader;
+  QString loadingTitle="default";
+  QString loadingSubtitle="default";
+  QString coverTitle="default";
 
 public:
   Q_PROPERTY(int size READ size NOTIFY sizeChanged)
+  Q_PROPERTY(int progress READ progress NOTIFY sizeChanged)
+  Q_PROPERTY(QString loadingTitle READ getTitle NOTIFY sizeChanged)
+  Q_PROPERTY(QString loadingSubtitle READ getSubtitle NOTIFY sizeChanged)
+  Q_PROPERTY(QString coverTitle READ getCover WRITE setCover NOTIFY sizeChanged)
   explicit dictionary(QObject *parent = 0);
 private:
   QString purify(const QString &entry) const;
@@ -35,6 +43,11 @@ private:
   void read_(const QString &filename);
 public:
   int size() const;
+  int progress() const;
+  QString getTitle() const;
+  QString getSubtitle() const;
+  QString getCover() const;
+  void setCover(QString c);
   virtual ~dictionary() {}
   void openDB(QUrl offlineStoragePath,QString dbname);
 signals:

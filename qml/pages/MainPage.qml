@@ -257,10 +257,10 @@ Page {
                       }
                       if(langs.rows.length>0){
                           pageTitle="Dictionary "+dictionaries.get(0).l1+"->"+dictionaries.get(0).l2
-                          coverTitle=""
+                          dictionary.coverTitle=""
                       } else {
                           pageTitle="No dictionary loaded"
-                          coverTitle="Not loaded"
+                          dictionary.coverTitle="Not loaded"
                       }
                   })
   }
@@ -272,7 +272,7 @@ Page {
       tx.executeSql("DROP TABLE if exists words");
       tx.executeSql("DROP TABLE if exists occurrences");
                   })
-      coverTitle="Not Loaded"
+      dictionary.coverTitle="Not Loaded"
       pageTitle="No dictionary loaded"
       main_page.db.transaction(initDB)
   }

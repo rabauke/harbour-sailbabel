@@ -67,7 +67,7 @@ CoverBackground {
     }
     Text {
       anchors.bottom: parent.bottom
-      text: basename(coverTitle)
+      text: dictionary.coverTitle
       color: Theme.highlightColor
       font.pixelSize: Theme.fontSizeMedium
       wrapMode: Text.Wrap
