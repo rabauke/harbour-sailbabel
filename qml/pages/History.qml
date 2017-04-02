@@ -58,7 +58,7 @@ Page {
             text: qsTr("Search again")
             onClicked: {
               queryFieldText=searchHistoryListModel.get(model.index).query
-                main_page.searchQuery(queryFieldText)
+                dictionary.search(queryFieldText)
               pageStack.navigateBack()
             }
           }

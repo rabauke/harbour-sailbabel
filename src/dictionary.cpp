@@ -4,14 +4,26 @@
 #include <QSet>
 #include <QRegularExpression>
 #include <QtSql/QSqlQuery>
-#include "sqlquerymodel.h"
 #include <QQmlEngine>
 #include <QUrl>
 #include <QDir>
 #include <QDebug>
 
-dictionary::dictionary(QObject *parent) : QObject(parent) {
+dictionary::dictionary(QSqlQueryModel *parent) : QSqlQueryModel(parent) {
+    _roleNames = new QHash<int,QByteArray>;
+    _roleNames->insert(Qt::UserRole,      QByteArray("definition1"));
+    _roleNames->insert(Qt::UserRole + 1,  QByteArray("definition2"));
     dicSize=0;
+    dicProgress=0;
+    db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("sailbabelDB");
+    if ( db.open ( )) {
+        qDebug("connected");
+    }
+    if(db.tables(QSql::Tables).length()==0){
+        qDebug("initializing database");
+        initDB();
+    }
 }
 
 QString dictionary::purify(const QString &entry) const {
@@ -66,8 +78,11 @@ void dictionary::read(const QString &filename) {
   thread->start();
 }
 
+void dictionary::search(const QString &term) {
+    updateModel(term);
+}
+
 void dictionary::read_(const QString &filename) {
-  emit dictChanged();
     map_A.clear();
     map_B.clear();
   QFile file(filename);
@@ -102,7 +117,7 @@ void dictionary::read_(const QString &filename) {
           lang_A=langs.captured("langA").toLatin1();
           lang_B=langs.captured("langB").toLatin1();
       }
-  } 
+  }
   loadingTitle="Reading "+lang_A+"->"+lang_B;
   loadingSubtitle="0 dictionary entries found";
   coverTitle="0";
@@ -149,7 +164,7 @@ void dictionary::read_(const QString &filename) {
           int def_id=q_ins_def.lastInsertId().toInt();
           updateMap(map_A,entry_plain_A,def_id);
           updateMap(map_B,entry_plain_B,def_id);
-          if (cnt%100==0){
+          if (cnt%1000==0){
               dicProgress=cnt;
               loadingSubtitle=QString::number(dicProgress)+" dictionary entries found";
               coverTitle="reading\n"+QString::number(dicProgress)+"\nentries";
@@ -166,7 +181,6 @@ void dictionary::read_(const QString &filename) {
       QSqlDatabase::database().commit();
       coverTitle=lang_A+" -> "+lang_B;
       emit sizeChanged();
-      emit initLangs();
   }
 }
 
@@ -248,40 +262,51 @@ void dictionary::error(QString) {
   emit readingError();
 }
 
-void dictionary::openDB(QUrl offlineStoragePath,QString dbname){
-    QDir storageDir(offlineStoragePath.toLocalFile()+"/Databases");
-    qDebug() << "Dictionaries found in dir: "<<storageDir.absolutePath();
-    qDebug() << storageDir.entryList();
-    QString dbPath="";
-    for(QString file : storageDir.entryList()){
-        if(file.endsWith(".ini"))
-        {
-            QFile ini(storageDir.absoluteFilePath(file));
-            if (not ini.open(QIODevice::ReadOnly | QIODevice::Text))
-                continue;
-            while(!ini.atEnd())
-            {
-                QString line = ini.readLine();
-                if(line.contains(dbname)) //probably could be better
-                {
-                    dbPath= storageDir.absoluteFilePath(file).replace(".ini", ".sqlite");
-                }
-            }
+void dictionary::eraseDB(){
+    QSqlQuery query;
+    query.exec("DROP TABLE if exists definitions");
+    query.exec("DROP TABLE if exists words");
+    query.exec("DROP TABLE if exists occurrences");
+}
 
-            ini.close();
+void dictionary::initDB(){
+    QSqlQuery query;
+    QString q=QString("create table definitions (DID integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,")+
+              "definition1 varchar(250),"+
+              "lang1 varchar(5), "+
+              "definition2 varchar(250), "+
+              "lang2 varchar(5))";
+    query.exec(q);
+    q=QString("create table words (WID integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,")+
+      "word varchar(250),"+
+      "lang varchar(5)) ";
+    query.exec(q);
+    q=QString("create table occurrences (OID integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, ")+
+      "langFrom varchar(5),"+
+      "langTo varchar(5), "+
+      "wordId INTEGER REFERENCES words(id), "+
+      "defId INTEGER REFERENCES definitions(id)) ";
+    query.exec(q);
+}
+
+void dictionary::updateModel(QString condition) {
+    qDebug("searching");
+    QString q;
+    if(condition.length()!=0){
+        QStringList clauses=condition.split(' ', QString::SkipEmptyParts);
+        if(clauses.length()>1){
+            q="WITH tbl AS (";
+            for(int i=0; i<clauses.length();i++){
+                clauses[i]=m_query+" WHERE word='"+clauses[i]+"'";
+            }
+            q=q+clauses.join(" UNION ALL ")+") SELECT * FROM tbl GROUP BY definition1,definition2 HAVING COUNT(*)="+QString::number(clauses.length());
+        } else {
+            q=m_query+" WHERE word='"+condition+"'";
         }
     }
-    qDebug()<<dbPath;
-    if(dbPath==""){
-        qDebug()<<"Initializing the database";
-        emit initDB();
-    }
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName(dbPath);
-    if ( db.open ( )) {
-        qDebug("connected");
-        emit initLangs();
-    }
+    qDebug("New query "+q.toLatin1());
+    const QString q1=q;
+    this->setQuery(q1);
 }
 
 //--------------------------------------------------------------------

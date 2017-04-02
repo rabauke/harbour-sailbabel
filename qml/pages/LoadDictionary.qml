@@ -32,8 +32,9 @@ Page {
     color: Theme.highlightColor
   }
   onStatusChanged: {
-    if (status==PageStatus.Active)
+    if (status==PageStatus.Active) {
       dictionary.read(dictionaryFile)
+    }
   }
 
 }

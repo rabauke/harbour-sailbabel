@@ -21,8 +21,7 @@ QMAKE_CXXFLAGS += -std=c++11
 
 SOURCES += src/harbour-sailbabel.cpp \
     src/dictionary.cpp \
-    src/folderlistmodel.cpp \
-    src/sqlquerymodel.cpp
+    src/folderlistmodel.cpp
 
 OTHER_FILES += qml/harbour-sailbabel.qml \
     qml/cover/CoverPage.qml \
@@ -57,6 +56,5 @@ INSTALLS += images
 
 HEADERS += \
     src/dictionary.hpp \
-    src/folderlistmodel.hpp \
-    src/sqlquerymodel.h
+    src/folderlistmodel.hpp
 

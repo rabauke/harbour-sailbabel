@@ -29,7 +29,6 @@
 */
 
 import QtQuick 2.2
-import QtQuick.LocalStorage 2.0
 import Sailfish.Silica 1.0
 import harbour.sailbabel.qmlcomponents 1.0
 
@@ -53,7 +52,7 @@ Page {
         text: qsTr("Erase Dictionary")
         onClicked: remorse_erase.execute(qsTr("Erasing database"),
                                          function() {
-                                             mdl.clear()
+                                             dictionary.clear()
                                              dictionaries.clear()
                                              queryFieldText=""
                                              eraseDB()
@@ -63,7 +62,7 @@ Page {
         text: qsTr("Change Dictionary")
         onClicked: {
             pageStack.replace(Qt.resolvedUrl("ChooseDictionary.qml"))
-            mdl.clear()
+            dictionary.clear()
             dictionaries.clear()
             queryFieldText=""
         }
@@ -89,14 +88,19 @@ Page {
           focus: true
           placeholderText: qsTr("Word or phrase")
           inputMethodHints: Qt.ImhNoAutoUppercase
-          EnterKey.enabled: text.length>0
+          //EnterKey.enabled: text.length>0
           EnterKey.onClicked: {
-            queryFieldText=text.replace(/\s\s*/g," ").replace(/^\s*/g,"").replace(/\s*$/g,"")
-            if (searchHistoryListModel.count===0 ||
-                searchHistoryListModel.get(0).query!=text)
-              searchHistoryListModel.insert(0, { query: text })
-            mdl.clear()
-            searchQuery(queryFieldText)
+              busy.visible=true
+              queryFieldText=text.replace(/\s\s*/g," ").replace(/^\s*/g,"").replace(/\s*$/g,"")
+              if (queryFieldText){
+                if (searchHistoryListModel.count===0 ||
+                    searchHistoryListModel.get(0).query!=text)
+                searchHistoryListModel.insert(0, { query: text })
+                dictionary.search(queryFieldText)
+                busy.visible=false
+              } else { // no query
+                  dictionary.clear()
+              }
           }
         }
         Text {
@@ -108,30 +112,38 @@ Page {
           font.italic: true
           font.pointSize: Theme.fontSizeSmall
           color: Theme.highlightColor
-          visible: mdl.count==0 && queryFieldText!=""
+          visible: dictionary.count==0 && queryFieldText!=""
+        }
+        BusyIndicator {
+          id: busy
+          size: BusyIndicatorSize.Small
+          anchors.top: queryField.top
+          anchors.topMargin: 10
+          anchors.right: queryField.right
+          anchors.rightMargin: 30
+          running: true
+          visible: false
+        }
         }
       }
     }
 
     header: hearderComponent
 
-    model: ListModel{
-    id:mdl
-    Component.onCompleted: openDB()
-    }
+    model :dictionary
 
     delegate: ListItem {
       width: main_page.width
       contentHeight: textLang1.height+textLang2.height+Theme.paddingLarge+Theme.paddingSmall
       menu: contextMenu
-      showMenuOnPressAndHold: !(model.definition1=="" && model.definition2=="")
+      showMenuOnPressAndHold: !(definition1=="" && definition2=="")
       Item {
         id: item
         height: textLang1.height+textLang2.height+Theme.paddingLarge
         width: parent.width
         Label {
           id: textLang1
-          text: model.definition1
+          text: definition1
           x: Theme.horizontalPageMargin
           width: parent.width-2*x
           anchors.top: item.top
@@ -140,7 +152,7 @@ Page {
         }
         Label {
           id: textLang2
-          text: model.definition2
+          text: definition2
           x: Theme.horizontalPageMargin
           width: parent.width-2*x
           anchors.top: textLang1.bottom
@@ -157,13 +169,13 @@ Page {
             height: fullTextLang1.height
             TextArea {
               id: fullTextLang1
-              text: model.definition1
+              text: definition1
               width: Screen.sizeCategory>=Screen.Large ? parent.width-Theme.iconSizeMedium-Theme.paddingMedium :  parent.width-Theme.iconSizeSmall-Theme.paddingMedium
               readOnly: true
               wrapMode: TextEdit.Wrap
               labelVisible: false
               onClicked: {
-                Clipboard.text=model.definition1
+                Clipboard.text=definition1
                 selectAll()
                 fullTextLang2.deselect()
                 clipboard1.visible=true
@@ -187,14 +199,14 @@ Page {
             height: fullTextLang2.height
             TextArea {
               id: fullTextLang2
-              text: model.definition2
+              text: definition2
               width: Screen.sizeCategory>=Screen.Large ? parent.width-Theme.iconSizeMedium-Theme.paddingMedium :  parent.width-Theme.iconSizeSmall-Theme.paddingMedium
               readOnly: true
               wrapMode: TextEdit.Wrap
               color: Theme.highlightColor
               labelVisible: false
               onClicked: {
-                Clipboard.text=model.definition2
+                Clipboard.text=definition2
                 selectAll()
                 fullTextLang1.deselect()
                 clipboard1.visible=false
@@ -218,103 +230,13 @@ Page {
     }
   }
 
-  property var db : null
   property string pageTitle: ""
 
-  function initDB(tx) {
-
-      // Create the database if it doesn't already exist
-      tx.executeSql("create table if not exists definitions (DID integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,"+
-                    "definition1 varchar(250),"+
-                    "lang1 varchar(5), "+
-                    "definition2 varchar(250), "+
-                    "lang2 varchar(5))");
-      tx.executeSql("create table if not exists occurrences (OID integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE, "+
-                    "langFrom varchar(5),"+
-                    "langTo varchar(5), "+
-                    "wordId INTEGER REFERENCES words(id), "+
-                    "defId INTEGER REFERENCES definitions(id)) ");
-      tx.executeSql("create table if not exists words (WID integer PRIMARY KEY AUTOINCREMENT NOT NULL UNIQUE,"+
-                    "word varchar(250),"+
-                    "lang varchar(5)) ");
-  }
-
-  function openDB() {
-      main_page.db = LocalStorage.openDatabaseSync(dbName, "1.0", "SailBabel's database", 1000000);
-        console.log("Opening DB")
-      main_page.db.transaction(initDB)
-      main_page.db.transaction(listDictsInDB)
-  }
-
-  function listDictsInDB(tx){
-      main_page.db.transaction(
-                  function(tx) {
-                      dictionaries.clear()
-                      var langs = tx.executeSql("SELECT DISTINCT lang1,lang2 FROM definitions");
-                      for(var i = 0; i < langs.rows.length; i++) {
-                          dictionaries.append({"l1":langs.rows.item(i).lang1,"l2":langs.rows.item(i).lang2})
-                          console.log("Dict: "+dictionaries.get(i).l1+" "+dictionaries.get(i).l2)
-                      }
-                      if(langs.rows.length>0){
-                          pageTitle="Dictionary "+dictionaries.get(0).l1+"->"+dictionaries.get(0).l2
-                          dictionary.coverTitle=""
-                      } else {
-                          pageTitle="No dictionary loaded"
-                          dictionary.coverTitle="Not loaded"
-                      }
-                  })
-  }
-
   function eraseDB(){
-      main_page.db.transaction(
-                  function(tx) {
-      tx.executeSql("DROP TABLE if exists definitions");
-      tx.executeSql("DROP TABLE if exists words");
-      tx.executeSql("DROP TABLE if exists occurrences");
-                  })
+      dictionary.eraseDB();
+      dictionary.initDB();
       dictionary.coverTitle="Not Loaded"
+      dictionary.clear()
       pageTitle="No dictionary loaded"
-      main_page.db.transaction(initDB)
   }
-
-  function searchQuery(queryFieldText) {
-      var arr=queryFieldText.split(' ').map(Function.prototype.call, String.prototype.trim) //.join("' and word='")
-      var words=[]
-      var q=""
-      if(arr.length>1){
-          q='WITH tbl AS (';
-          var clauses=[]
-          for(var clause in arr){
-              clauses.push('SELECT * FROM words w INNER JOIN occurrences o ON o.wordId=w.wid INNER JOIN definitions d ON o.defId = d.did WHERE word=?')
-              words.push(arr[clause])
-          }
-          q+=clauses.join(" UNION ALL ")
-          q+=') SELECT * FROM tbl GROUP BY definition1,definition2 HAVING COUNT(*)='+words.length;
-      } else {
-          q='SELECT * FROM words w INNER JOIN occurrences o ON o.wordId=w.wid INNER JOIN definitions d ON o.defId = d.did WHERE word=?'
-          words.push(arr[0])
-      }
-      main_page.db.transaction(
-                  function(tx) {
-                      // Show all added greetings
-                      console.log(q)
-                      console.log(words)
-                      var rs = tx.executeSql(q,words)
-                      for(var i = 0; i < rs.rows.length; i++) {
-                          mdl.append({definition1: rs.rows.item(i).definition1,definition2:rs.rows.item(i).definition2})
-                      }
-                  }
-                  )
-  }
-
-  Connections {
-      target: dictionary
-      onInitDB:{
-          openDB()
-      }
-      onInitLangs:{
-          listDictsInDB()
-      }
-  }
-
 }
