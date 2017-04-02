@@ -292,21 +292,26 @@ void dictionary::initDB(){
 void dictionary::updateModel(QString condition) {
     qDebug("searching");
     QString q;
+    QStringList terms;
     if(condition.length()!=0){
         QStringList clauses=condition.split(' ', QString::SkipEmptyParts);
         if(clauses.length()>1){
-            q="WITH tbl AS (";
             for(int i=0; i<clauses.length();i++){
-                clauses[i]=m_query+" WHERE word='"+clauses[i]+"'";
+                terms.append(m_query);
             }
-            q=q+clauses.join(" UNION ALL ")+") SELECT * FROM tbl GROUP BY definition1,definition2 HAVING COUNT(*)="+QString::number(clauses.length());
+            q="WITH tbl AS ("+terms.join(" UNION ALL ")+") SELECT * FROM tbl GROUP BY definition1,definition2 HAVING COUNT(*)="+QString::number(clauses.length());
         } else {
-            q=m_query+" WHERE word='"+condition+"'";
+            q=m_query;
         }
+        QSqlQuery query;
+        query.prepare(q);
+        for(int i=0;i<clauses.length();i++){
+            query.bindValue(i,clauses[i]);
+        }
+        qDebug("New query "+query.lastQuery().toLatin1());
+        query.exec();
+        this->setQuery(query);
     }
-    qDebug("New query "+q.toLatin1());
-    const QString q1=q;
-    this->setQuery(q1);
 }
 
 //--------------------------------------------------------------------

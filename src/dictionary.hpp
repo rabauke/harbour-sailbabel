@@ -41,7 +41,7 @@ private:
   void generateQuery(QMultiHash<QByteArray, int> map,QSqlQuery q_ins_word,QSqlQuery q_ins_occ,QString lang,QString langFrom, QString langTo);
   void updateMap(QMultiHash<QByteArray, int> &map,QString entry,int def_id);
   QSqlDatabase db;
-  const QString m_query="SELECT definition1,definition2 FROM words w INNER JOIN occurrences o ON o.wordId=w.wid INNER JOIN definitions d ON o.defId = d.did";
+  const QString m_query="SELECT definition1,definition2 FROM words w INNER JOIN occurrences o ON o.wordId=w.wid INNER JOIN definitions d ON o.defId = d.did WHERE word=?";
 public:
   Q_INVOKABLE void read(const QString &filename);
   Q_INVOKABLE void eraseDB();

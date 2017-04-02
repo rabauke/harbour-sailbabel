@@ -124,7 +124,6 @@ Page {
           running: true
           visible: false
         }
-        }
       }
     }
 
