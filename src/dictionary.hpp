@@ -24,9 +24,9 @@ class dictionary : public QSqlQueryModel {
   int dicProgress;
   int max_num_results=200;
   friend class dictionaryloader;
-  QString loadingTitle="default";
-  QString loadingSubtitle="default";
-  QString coverTitle="default";
+  QString loadingTitle="";
+  QString loadingSubtitle="";
+  QString coverTitle="asd";
   QHash<int,QByteArray> *_roleNames;
 
 public:
