@@ -55,6 +55,7 @@ Page {
           folderModel.folder=filePath
         } else {
           dictionaryFile=filePath
+            pageStack.clear()
           pageStack.replace("LoadDictionary.qml")
         }
       }

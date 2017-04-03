@@ -70,8 +70,8 @@
 <context>
     <name>MainPage</name>
     <message>
-        <source>Change Dictionary</source>
-        <translation>Wörterbuch wechseln</translation>
+        <source>Import Dictionary</source>
+        <translation>Wörterbuch importieren</translation>
     </message>
     <message>
         <source>Word or phrase</source>

@@ -59,9 +59,9 @@ Page {
                                          })
       }
       MenuItem {
-        text: qsTr("Change Dictionary")
+        text: qsTr("Import Dictionary")
         onClicked: {
-            pageStack.replace(Qt.resolvedUrl("ChooseDictionary.qml"))
+            pageStack.push(Qt.resolvedUrl("ChooseDictionary.qml"))
             dictionary.clear()
             dictionaries.clear()
             queryFieldText=""
