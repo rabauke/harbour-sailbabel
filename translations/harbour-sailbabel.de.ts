@@ -70,6 +70,10 @@
 <context>
     <name>MainPage</name>
     <message>
+        <source>Dictionary</source>
+        <translation>Wörterbuch</translation>
+    </message>
+    <message>
         <source>Import Dictionary</source>
         <translation>Wörterbuch importieren</translation>
     </message>
