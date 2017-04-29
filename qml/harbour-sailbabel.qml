@@ -34,6 +34,7 @@ import harbour.sailbabel.qmlcomponents 1.0
 import "pages"
 
 ApplicationWindow {
+    id: appWindow
 
   Dictionary {
     id: dictionary

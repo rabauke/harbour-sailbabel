@@ -66,8 +66,9 @@ CoverBackground {
       horizontalAlignment: Text.AlignHCenter
     }
     Text {
-      anchors.bottom: parent.bottom
       text: basename(dictionaryFile)
+      anchors.top: title.bottom
+      anchors.topMargin: 1.25*Theme.paddingLarge
       color: Theme.highlightColor
       font.pixelSize: Theme.fontSizeMedium
       wrapMode: Text.Wrap
@@ -75,5 +76,18 @@ CoverBackground {
       horizontalAlignment: Text.AlignHCenter
     }
   }
+
+  CoverActionList {
+          id: coverAction
+
+          CoverAction {
+              iconSource: "image://theme/icon-cover-search"
+              onTriggered: {
+                  pageStack.clear()
+                  pageStack.replace("../pages/MainPage.qml")
+                  appWindow.activate()
+              }
+          }
+      }
 
 }
