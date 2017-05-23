@@ -79,8 +79,15 @@ void dictionary::read_(const QString &filename) {
 #endif
     if (line_split.size()<2)
       continue;
+#if QT_VERSION>=0x050400
+    QString entry_A;
+    entry_A+=line_split[0];
+    QString entry_B;
+    entry_B+=line_split[1];
+#else
     QString entry_A(line_split[0]);
     QString entry_B(line_split[1]);
+#endif
     if (entry_A.startsWith("to "))
       entry_A.remove(0, 3);
     if (entry_B.startsWith("to "))

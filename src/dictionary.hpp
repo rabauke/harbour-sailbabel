@@ -40,7 +40,7 @@ private:
                          const QMultiHash<QByteArray, int> &map_A) const;
 public:
   int size() const;
-  bool dictEmpty(){return dict_A.empty() || dict_B.empty();}
+  bool dictEmpty(){ return dict_A.empty() or dict_B.empty(); }
   Q_INVOKABLE QVariantList translateAtoB(const QString &query) const;
   Q_INVOKABLE QVariantList translateBtoA(const QString &query) const;
   virtual ~dictionary() {}
