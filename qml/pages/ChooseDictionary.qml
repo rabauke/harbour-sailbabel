@@ -43,8 +43,8 @@ Page {
       Label {
         id: result_text
         y: 0.5*Theme.paddingLarge
-        width: parent.width-2*Theme.horizontalPageMargin
-        horizontalAlignment: TextEdit.AlignHCenter
+        width: parent.width
+        horizontalAlignment: Text.AlignHCenter
         text: fileName!=".." ? fileName : qsTr("Parent directory")
         font.italic: fileName==".."
         color: fileIsDir ? Theme.highlightColor : Theme.primaryColor

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2016 Heiko Bauke
+  Copyright (C) 2016-2017 Heiko Bauke
   Contact: Heiko Bauke <heiko.bauke@mail.de>
   All rights reserved.
 
@@ -33,7 +33,9 @@ import Sailfish.Silica 1.0
 import harbour.sailbabel.qmlcomponents 1.0
 import "pages"
 
+
 ApplicationWindow {
+  id: appWindow
 
   Dictionary {
     id: dictionary

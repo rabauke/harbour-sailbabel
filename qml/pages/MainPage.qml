@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2016 Heiko Bauke
+  Copyright (C) 2016-2017 Heiko Bauke
   Contact: Heiko Bauke <heiko.bauke@mail.de>
   All rights reserved.
 
@@ -61,6 +61,7 @@ Page {
     Component {
       id: hearderComponent
       Item {
+        id: hearderComponentItem
         anchors.horizontalCenter: main_page.Center
         height: pageHeader.height+queryField.height
         width: main_page.width
@@ -68,12 +69,12 @@ Page {
           id: pageHeader
           title: qsTr("Dictionary")
         }
-        TextField {
+        SearchField {
           id: queryField
           anchors.top: pageHeader.bottom
           width: parent.width
           text: queryFieldText
-          focus: true
+          focus: hearderComponentItem.activeFocus
           placeholderText: qsTr("Word or phrase")
           inputMethodHints: Qt.ImhNoAutoUppercase
           EnterKey.enabled: text.length>0

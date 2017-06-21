@@ -11,3 +11,6 @@
 
 * Sun February 19 2017 Heiko Bauke <heiko.bauke@mail.de> 0.4-1
 - change dictionary without closing the app
+
+* Tue June 20 2017 Heiko Bauke <heiko.bauke@mail.de> 0.5-1
+- use Silica Search Field for better user experience
