@@ -11,18 +11,12 @@ class FolderListModel : public QAbstractListModel {
   Q_OBJECT
   QDir dir;
   QFileInfoList fileInfoList;
-public:
 
+public:
   Q_PROPERTY(QString folder READ getFolder WRITE setFolder)
-  enum FolderListModelRoles {
-    FileNameRole=Qt::UserRole+1,
-    FilePathRole,
-    FileIsDirRole
-  };
-  explicit FolderListModel(QObject *parent=0);
-  virtual int rowCount(const QModelIndex&) const {
-    return dir.count();
-  }
+  enum FolderListModelRoles { FileNameRole = Qt::UserRole + 1, FilePathRole, FileIsDirRole };
+  explicit FolderListModel(QObject *parent = 0);
+  virtual int rowCount(const QModelIndex &) const { return dir.count(); }
   virtual QVariant data(const QModelIndex &index, int role) const;
   QHash<int, QByteArray> roleNames() const;
 

@@ -1,5 +1,5 @@
 /*
-  Copyright (C) 2016-2017 Heiko Bauke
+  Copyright (C) 2016-2022 Heiko Bauke
   Contact: Heiko Bauke <heiko.bauke@mail.de>
   All rights reserved.
 
@@ -37,14 +37,15 @@
 #include "folderlistmodel.hpp"
 
 int main(int argc, char *argv[]) {
-  QGuiApplication *app=SailfishApp::application(argc, argv);
-  QString locale=QLocale::system().name();
-  QTranslator *translator=new QTranslator;
-  if ((translator->load("harbour-sailbabel."+locale, "/usr/share/harbour-sailbabel/translations")))
+  QGuiApplication *app = SailfishApp::application(argc, argv);
+  QString locale = QLocale::system().name();
+  QTranslator *translator = new QTranslator;
+  if ((translator->load("harbour-sailbabel." + locale,
+                        "/usr/share/harbour-sailbabel/translations")))
     app->installTranslator(translator);
   qmlRegisterType<dictionary>("harbour.sailbabel.qmlcomponents", 1, 0, "Dictionary");
   qmlRegisterType<FolderListModel>("harbour.sailbabel.qmlcomponents", 1, 0, "FolderListModel");
-  QQuickView *view=SailfishApp::createView();
+  QQuickView *view = SailfishApp::createView();
   view->setSource(SailfishApp::pathTo("qml/harbour-sailbabel.qml"));
   view->show();
   return app->exec();

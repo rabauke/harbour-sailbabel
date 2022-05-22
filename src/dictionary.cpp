@@ -10,35 +10,43 @@ dictionary::dictionary(QObject *parent) : QObject(parent) {
 QString dictionary::purify(const QString &entry) const {
   QString plain;
   plain.reserve(entry.size());
-  bool in_word_mode=true;
+  bool in_word_mode = true;
   QChar waiting_for;
-  for (auto l: entry) {
+  for (auto l : entry) {
     if (in_word_mode) {
       if (l.isLetter()) {
         plain.append(l.toCaseFolded());
         continue;
       }
-      if (l=='-')
-        l=' ';
+      if (l == '-')
+        l = ' ';
       if (l.isSpace() and (not plain.endsWith(' ')) and (not plain.isEmpty())) {
         plain.append(l);
         continue;
       }
-      if (l=='(') {
-        waiting_for=')'; in_word_mode=false; continue;
+      if (l == '(') {
+        waiting_for = ')';
+        in_word_mode = false;
+        continue;
       }
-      if (l=='[') {
-        waiting_for=']'; in_word_mode=false; continue;
+      if (l == '[') {
+        waiting_for = ']';
+        in_word_mode = false;
+        continue;
       }
-      if (l=='{') {
-        waiting_for='}'; in_word_mode=false; continue;
+      if (l == '{') {
+        waiting_for = '}';
+        in_word_mode = false;
+        continue;
       }
-      if (l=='<') {
-        waiting_for='>'; in_word_mode=false; continue;
+      if (l == '<') {
+        waiting_for = '>';
+        in_word_mode = false;
+        continue;
       }
     } else {
-      if (l==waiting_for)
-        in_word_mode=true;
+      if (l == waiting_for)
+        in_word_mode = true;
     }
   }
   if (plain.endsWith(' '))
@@ -47,8 +55,8 @@ QString dictionary::purify(const QString &entry) const {
 }
 
 void dictionary::read(const QString &filename) {
-  QThread* thread=new QThread;
-  dictionaryloader* worker=new dictionaryloader(*this, filename);
+  QThread *thread = new QThread;
+  dictionaryloader *worker = new dictionaryloader(*this, filename);
   worker->moveToThread(thread);
   connect(worker, SIGNAL(error(QString)), this, SLOT(error(QString)));
   connect(thread, SIGNAL(started()), worker, SLOT(process()));
@@ -72,18 +80,18 @@ void dictionary::read_(const QString &filename) {
     QString line(file.readLine());
     if (line.startsWith('#'))
       continue;
-#if QT_VERSION>=0x050400
-    auto line_split=line.splitRef('\t');
+#if QT_VERSION >= 0x050400
+    auto line_split = line.splitRef('\t');
 #else
-    auto line_split=line.split('\t');
+    auto line_split = line.split('\t');
 #endif
-    if (line_split.size()<2)
+    if (line_split.size() < 2)
       continue;
-#if QT_VERSION>=0x050400
+#if QT_VERSION >= 0x050400
     QString entry_A;
-    entry_A+=line_split[0];
+    entry_A += line_split[0];
     QString entry_B;
-    entry_B+=line_split[1];
+    entry_B += line_split[1];
 #else
     QString entry_A(line_split[0]);
     QString entry_B(line_split[1]);
@@ -96,27 +104,27 @@ void dictionary::read_(const QString &filename) {
     dict_A.back().squeeze();
     dict_B.push_back(entry_B.toUtf8());
     dict_B.back().squeeze();
-    QString entry_plain_A=purify(entry_A);
-    QString entry_plain_B=purify(entry_B);
-#if QT_VERSION>=0x050400
-    for (const auto &v: entry_plain_A.splitRef(' ', QString::SkipEmptyParts)) {
+    QString entry_plain_A = purify(entry_A);
+    QString entry_plain_B = purify(entry_B);
+#if QT_VERSION >= 0x050400
+    for (const auto &v : entry_plain_A.splitRef(' ', QString::SkipEmptyParts)) {
 #else
-    for (const auto &v: entry_plain_A.split(' ', QString::SkipEmptyParts)) {
+    for (const auto &v : entry_plain_A.split(' ', QString::SkipEmptyParts)) {
 #endif
-      QByteArray word=v.toUtf8();
+      QByteArray word = v.toUtf8();
       word.squeeze();
-      map_A.insert(word, dict_A.size()-1);
+      map_A.insert(word, dict_A.size() - 1);
     }
-#if QT_VERSION>=0x050400
-    for (const auto &v: entry_plain_B.splitRef(' ', QString::SkipEmptyParts)) {
+#if QT_VERSION >= 0x050400
+    for (const auto &v : entry_plain_B.splitRef(' ', QString::SkipEmptyParts)) {
 #else
-    for (const auto &v: entry_plain_B.split(' ', QString::SkipEmptyParts)) {
+    for (const auto &v : entry_plain_B.split(' ', QString::SkipEmptyParts)) {
 #endif
-      QByteArray word=v.toUtf8();
+      QByteArray word = v.toUtf8();
       word.squeeze();
-      map_B.insert(word, dict_B.size()-1);
+      map_B.insert(word, dict_B.size() - 1);
     }
-    if (dict_A.size()%2477==0)
+    if (dict_A.size() % 2477 == 0)
       emit sizeChanged();
   }
   emit sizeChanged();
@@ -131,33 +139,32 @@ void dictionary::read_(const QString &filename) {
 int dictionary::size() const {
   int res;
   mutex.lock();
-  res=dict_A.size();
+  res = dict_A.size();
   mutex.unlock();
   return res;
 }
 
-QVariantList dictionary::translate(const QString &querry,
-                                   const QVector<QByteArray> &dict_A,
+QVariantList dictionary::translate(const QString &querry, const QVector<QByteArray> &dict_A,
                                    const QVector<QByteArray> &dict_B,
                                    const QMultiHash<QByteArray, int> &map_A) const {
   // remove non-letters from query and split into single words
-  QStringList querry_list=purify(querry).split(' ', QString::SkipEmptyParts);
+  QStringList querry_list = purify(querry).split(' ', QString::SkipEmptyParts);
   // no results if no words in query
   if (querry_list.empty())
     return QVariantList();
   // construct intersection of all matches for each single query word
   QSet<int> results;
   {
-    auto i=map_A.find(querry_list[0].toUtf8());
-    while (i!=map_A.end() and i.key()==querry_list[0]) {
+    auto i = map_A.find(querry_list[0].toUtf8());
+    while (i != map_A.end() and i.key() == querry_list[0]) {
       results.insert(*i);
       ++i;
     }
   }
-  for (int k=1; k<querry_list.size(); ++k) {
+  for (int k = 1; k < querry_list.size(); ++k) {
     QSet<int> further_results;
-    auto i=map_A.find(querry_list[k].toUtf8());
-    while (i!=map_A.end() and i.key()==querry_list[k]) {
+    auto i = map_A.find(querry_list[k].toUtf8());
+    while (i != map_A.end() and i.key() == querry_list[k]) {
       further_results.insert(*i);
       ++i;
     }
@@ -170,41 +177,43 @@ QVariantList dictionary::translate(const QString &querry,
   // combine query words successfully into a string and check if
   // match contains this string, if yes increase score, in particular,
   // when match starts with this string
-  for (int i=0; i<hits.size(); ++i) {
-    QString plain=purify(dict_A[hits[i]]);
-    QString prefix=querry_list[0];
+  for (int i = 0; i < hits.size(); ++i) {
+    QString plain = purify(dict_A[hits[i]]);
+    QString prefix = querry_list[0];
     if (plain.startsWith(prefix)) {
-      scores[i]+=6;
-      if (QString(dict_A[hits[i]]).toCaseFolded().contains(QRegularExpression("^"+prefix+"\\S")))
-        scores[i]-=2;
+      scores[i] += 6;
+      if (QString(dict_A[hits[i]])
+              .toCaseFolded()
+              .contains(QRegularExpression("^" + prefix + "\\S")))
+        scores[i] -= 2;
     } else if (plain.contains(prefix))
-      scores[i]+=3;
-    for (int k=1; k<querry_list.size(); ++k) {
-      prefix+=" ";
-      prefix+=querry_list[k];
+      scores[i] += 3;
+    for (int k = 1; k < querry_list.size(); ++k) {
+      prefix += " ";
+      prefix += querry_list[k];
       if (plain.startsWith(prefix))
-        scores[i]+=6;
+        scores[i] += 6;
       else if (plain.contains(prefix))
-        scores[i]+=3;
+        scores[i] += 3;
     }
     // additional points if there is an exact match
-    if (plain==prefix)
-      scores[i]+=2;
+    if (plain == prefix)
+      scores[i] += 2;
     // prefer short results
-    scores[i]-=plain.count(" ");
+    scores[i] -= plain.count(" ");
   }
   // indirect sort accoring to scores
   QVector<int> indices(results.size());
   std::iota(indices.begin(), indices.end(), 0);
   std::sort(indices.begin(), indices.end(),
-            [&](int a, int b) -> bool { return scores[a]>scores[b]; });
+            [&](int a, int b) -> bool { return scores[a] > scores[b]; });
   // generate sorted results
-  int count=0;
+  int count = 0;
   QVariantList result;
-  for (auto i: indices) {
-    result.append(QStringList( { dict_A[hits[i]], dict_B[hits[i]] } ));
+  for (auto i : indices) {
+    result.append(QStringList({dict_A[hits[i]], dict_B[hits[i]]}));
     ++count;
-    if (count==max_num_results)
+    if (count == max_num_results)
       break;
   }
   return result;
@@ -229,17 +238,15 @@ void dictionary::error(QString) {
 
 //--------------------------------------------------------------------
 
-dictionaryloader::dictionaryloader(dictionary &dict, const QString &filename) :
-  dict(dict),
-  filename(filename) {
+dictionaryloader::dictionaryloader(dictionary &dict, const QString &filename)
+    : dict(dict), filename(filename) {
 }
 
 void dictionaryloader::process() {
   try {
     dict.read_(filename);
     emit finished();
-  }
-  catch (...) {
+  } catch (...) {
     emit error("unable to read dictionary");
   }
 }
