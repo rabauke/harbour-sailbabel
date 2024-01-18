@@ -31,7 +31,7 @@ Page {
         }
       }
       Label {
-        text: '<br>© Heiko Bauke, 2016–2017<br><br>Fork me on github!<br><a href=\'https://github.com/rabauke/harbour-sailbabel\'>https://github.com/rabauke/harbour-sailbabel</a>'
+        text: '<br>© Heiko Bauke, 2016–2024<br><br>Fork me on github!<br><a href=\'https://github.com/rabauke/harbour-sailbabel\'>https://github.com/rabauke/harbour-sailbabel</a>'
         textFormat: Text.StyledText
         width: column.width
         color: Theme.primaryColor
