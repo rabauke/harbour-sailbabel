@@ -46,6 +46,8 @@ add_executable(harbour-sailbabel
     src/Dictionary.cpp
     src/FolderListModel.hpp
     src/FolderListModel.cpp
+    src/AppModel.hpp
+    src/AppModel.cpp
 )
 target_compile_definitions(harbour-sailbabel PRIVATE
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>

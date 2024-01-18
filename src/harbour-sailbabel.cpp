@@ -3,6 +3,7 @@
 #include <QObject>
 #include <QtQml>
 #include <sailfishapp.h>
+#include "AppModel.hpp"
 #include "Dictionary.hpp"
 #include "FolderListModel.hpp"
 
@@ -12,6 +13,7 @@ int main(int argc, char *argv[]) {
   app->setApplicationName("harbour-sailbabel");
   app->setOrganizationDomain("rabauke");
 
+  qmlRegisterType<AppModel>("harbour.sailbabel.qmlcomponents", 1, 0, "AppModel");
   qmlRegisterType<Dictionary>("harbour.sailbabel.qmlcomponents", 1, 0, "Dictionary");
   qmlRegisterType<FolderListModel>("harbour.sailbabel.qmlcomponents", 1, 0, "FolderListModel");
 

@@ -7,6 +7,10 @@ import 'pages'
 ApplicationWindow {
   id: appWindow
 
+  AppModel {
+    id: appModel
+  }
+
   Dictionary {
     id: dictionary
     onReadingFinished: {

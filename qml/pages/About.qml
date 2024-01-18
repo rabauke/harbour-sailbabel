@@ -14,7 +14,7 @@ Page {
       width: parent.width
       spacing: Theme.paddingMedium
       PageHeader {
-        title: 'SailBabel'
+        title: 'SailBabel v' + appModel.version
       }
       Text {
         x: Theme.horizontalPageMargin
