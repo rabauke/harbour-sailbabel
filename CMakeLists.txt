@@ -42,10 +42,10 @@ configure_file(src/Version.h.in ${CMAKE_BINARY_DIR}/src/Version.h @ONLY)
 
 add_executable(harbour-sailbabel
     src/harbour-sailbabel.cpp
-    src/dictionary.hpp
-    src/dictionary.cpp
-    src/folderlistmodel.hpp
-    src/folderlistmodel.cpp
+    src/Dictionary.hpp
+    src/Dictionary.cpp
+    src/FolderListModel.hpp
+    src/FolderListModel.cpp
 )
 target_compile_definitions(harbour-sailbabel PRIVATE
     $<$<OR:$<CONFIG:Debug>,$<CONFIG:RelWithDebInfo>>:QT_QML_DEBUG>
