@@ -17,3 +17,8 @@ Name[pt]=Dicionário
 Name[fi]=Sanakirja
 Name[se]=Ordbok
 Name[ru]=Слова́рь
+
+[X-Sailjail]
+Permissions=UserDirs
+OrganizationName=rabauke
+ApplicationName=harbour-sailbabel

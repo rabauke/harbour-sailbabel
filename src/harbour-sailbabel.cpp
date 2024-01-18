@@ -37,15 +37,14 @@
 #include "folderlistmodel.hpp"
 
 int main(int argc, char *argv[]) {
-  QGuiApplication *app = SailfishApp::application(argc, argv);
-  QString locale = QLocale::system().name();
-  QTranslator *translator = new QTranslator;
-  if ((translator->load("harbour-sailbabel." + locale,
-                        "/usr/share/harbour-sailbabel/translations")))
-    app->installTranslator(translator);
+  QScopedPointer<QGuiApplication> app{SailfishApp::application(argc, argv)};
+  app->setApplicationName("harbour-sailbabel");
+  app->setOrganizationDomain("rabauke");
+
   qmlRegisterType<dictionary>("harbour.sailbabel.qmlcomponents", 1, 0, "Dictionary");
   qmlRegisterType<FolderListModel>("harbour.sailbabel.qmlcomponents", 1, 0, "FolderListModel");
-  QQuickView *view = SailfishApp::createView();
+
+  QScopedPointer<QQuickView> view{SailfishApp::createView()};
   view->setSource(SailfishApp::pathTo("qml/harbour-sailbabel.qml"));
   view->show();
   return app->exec();
