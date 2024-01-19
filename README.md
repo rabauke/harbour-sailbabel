@@ -1,6 +1,8 @@
 SailBabel
 =========
 
+[![Build RPMs](https://github.com/rabauke/harbour-sailbabel/actions/workflows/build.yaml/badge.svg)](https://github.com/rabauke/harbour-sailbabel/actions/workflows/build.yaml)
+
 SailBabel is an offline dictionary for Sailfish OS.  Note that this 
 program does not include translations or wordlists.  Just copy your 
 own set of translations to a text file in the sub-folder Dictionaries 
