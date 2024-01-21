@@ -9,6 +9,9 @@ Page {
   SilicaListView {
     id: listView
 
+    property int numberOfResultsAtoB: 0
+    property int numberOfResultsBtoA: 0
+
     anchors.fill: parent
 
     VerticalScrollDecorator {
@@ -56,28 +59,28 @@ Page {
                                           ' ').replace(/^\s*/g,
                                                        '').replace(/\s*$/g, '')
             if (searchHistoryListModel.count === 0
-                || searchHistoryListModel.get(0).query != text)
+                || searchHistoryListModel.get(0).query !== text)
               searchHistoryListModel.insert(0, {
                                               'query': text
                                             })
             resultsListModel.clear()
-            var trans = dictionary.translateAtoB(text)
-            for (var i in trans)
+            var transAtoB = dictionary.translateAtoB(text)
+            var transBtoA = dictionary.translateBtoA(text)
+            var i
+            for (i in transAtoB)
               resultsListModel.append({
-                                        'lang1': trans[i][0],
-                                        'lang2': trans[i][1]
+                                        'section': 'AtoB',
+                                        'lang1': transAtoB[i][0],
+                                        'lang2': transAtoB[i][1]
                                       })
-            if (trans.length > 0)
+            for (i in transBtoA)
               resultsListModel.append({
-                                        'lang1': '',
-                                        'lang2': ''
+                                        'section': 'BtoA',
+                                        'lang1': transBtoA[i][0],
+                                        'lang2': transBtoA[i][1]
                                       })
-            var trans = dictionary.translateBtoA(text)
-            for (var i in trans)
-              resultsListModel.append({
-                                        'lang1': trans[i][0],
-                                        'lang2': trans[i][1]
-                                      })
+            listView.numberOfResultsAtoB = transAtoB.length
+            listView.numberOfResultsBtoA = transBtoA.length
           }
         }
         Text {
@@ -97,6 +100,26 @@ Page {
     header: hearderComponent
 
     model: resultsListModel
+
+    section.property: 'section'
+    section.delegate: Item {
+      x: Theme.horizontalPageMargin
+      width: parent.width - 2 * x
+      height: 5 * bar.width
+      Rectangle {
+        rotation: 90
+        id: bar
+        height: parent.width
+        width: section === 'BtoA' && listView.numberOfResultsAtoB > 0  && listView.numberOfResultsBtoA > 0 ? Theme.paddingSmall : 0
+        radius: width / 3
+        anchors.centerIn: parent
+        opacity: 0.75
+        gradient: Gradient {
+          GradientStop { position: 0.667; color: Theme.secondaryColor }
+          GradientStop { position: 0.0; color: "transparent" }
+        }
+      }
+    }
 
     delegate: ListItem {
       width: main_page.width
