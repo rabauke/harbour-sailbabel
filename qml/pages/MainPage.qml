@@ -1,6 +1,7 @@
 import QtQuick 2.2
 import Sailfish.Silica 1.0
 import harbour.sailbabel.qmlcomponents 1.0
+import '../components'
 
 Page {
   id: main_page
@@ -40,7 +41,7 @@ Page {
           id: pageHeader
           title: qsTr('Dictionary')
         }
-        SearchField {
+        QueryField {
           id: queryField
           anchors.top: pageHeader.bottom
           width: parent.width
@@ -48,6 +49,7 @@ Page {
           focus: hearderComponentItem.activeFocus
           placeholderText: qsTr('Word or phrase')
           inputMethodHints: Qt.ImhNoAutoUppercase
+          EnterKey.iconSource: 'image://theme/icon-m-enter-next'
           EnterKey.enabled: text.length > 0
           EnterKey.onClicked: {
             queryFieldText = text.replace(/\s\s*/g,
