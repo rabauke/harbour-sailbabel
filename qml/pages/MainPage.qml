@@ -35,64 +35,71 @@ Page {
 
     Component {
       id: hearderComponent
-      Item {
-        id: hearderComponentItem
-        anchors.horizontalCenter: main_page.Center
-        height: pageHeader.height + queryField.height
-        width: main_page.width
-        PageHeader {
-          id: pageHeader
-          title: qsTr('Dictionary')
-        }
-        QueryField {
-          id: queryField
-          anchors.top: pageHeader.bottom
-          width: parent.width
-          text: queryFieldText
-          focus: hearderComponentItem.activeFocus
-          placeholderText: qsTr('Word or phrase')
-          inputMethodHints: Qt.ImhNoAutoUppercase
-          EnterKey.iconSource: 'image://theme/icon-m-enter-next'
-          EnterKey.enabled: text.length > 0
-          EnterKey.onClicked: {
-            queryFieldText = text.replace(/\s\s*/g,
-                                          ' ').replace(/^\s*/g,
-                                                       '').replace(/\s*$/g, '')
-            if (searchHistoryListModel.count === 0
-                || searchHistoryListModel.get(0).query !== text)
-              searchHistoryListModel.insert(0, {
-                                              'query': text
-                                            })
-            resultsListModel.clear()
-            var transAtoB = dictionary.translateAtoB(text)
-            var transBtoA = dictionary.translateBtoA(text)
-            var i
-            for (i in transAtoB)
-              resultsListModel.append({
-                                        'section': 'AtoB',
-                                        'lang1': transAtoB[i][0],
-                                        'lang2': transAtoB[i][1]
-                                      })
-            for (i in transBtoA)
-              resultsListModel.append({
-                                        'section': 'BtoA',
-                                        'lang1': transBtoA[i][0],
-                                        'lang2': transBtoA[i][1]
-                                      })
-            listView.numberOfResultsAtoB = transAtoB.length
-            listView.numberOfResultsBtoA = transBtoA.length
+      FocusScope {
+        x: hearderComponentItem.x
+        y: hearderComponentItem.y
+        width: hearderComponentItem.width
+        height: hearderComponentItem.height
+        Item {
+          id: hearderComponentItem
+          anchors.horizontalCenter: main_page.Center
+          height: pageHeader.height + queryField.height
+          width: main_page.width
+          PageHeader {
+            id: pageHeader
+            title: qsTr('Dictionary')
           }
-        }
-        Text {
-          id: no_results
-          anchors.top: queryField.bottom
-          x: Theme.horizontalPageMargin
-          width: parent.width - 2 * x
-          text: qsTr('No match in dictionary.')
-          font.italic: true
-          font.pointSize: Theme.fontSizeSmall
-          color: Theme.highlightColor
-          visible: resultsListModel.count === 0 && queryFieldText !== ''
+          QueryField {
+            id: queryField
+            anchors.top: pageHeader.bottom
+            width: parent.width
+            text: queryFieldText
+            focus: true
+            placeholderText: qsTr('Word or phrase')
+            inputMethodHints: Qt.ImhNoAutoUppercase
+            EnterKey.iconSource: 'image://theme/icon-m-enter-next'
+            EnterKey.enabled: text.length > 0
+            EnterKey.onClicked: {
+              queryFieldText = text.replace(/\s\s*/g,
+                                            ' ').replace(/^\s*/g,
+                                                         '').replace(/\s*$/g,
+                                                                     '')
+              if (searchHistoryListModel.count === 0
+                  || searchHistoryListModel.get(0).query !== text)
+                searchHistoryListModel.insert(0, {
+                                                'query': text
+                                              })
+              resultsListModel.clear()
+              var transAtoB = dictionary.translateAtoB(text)
+              var transBtoA = dictionary.translateBtoA(text)
+              var i
+              for (i in transAtoB)
+                resultsListModel.append({
+                                          'section': 'AtoB',
+                                          'lang1': transAtoB[i][0],
+                                          'lang2': transAtoB[i][1]
+                                        })
+              for (i in transBtoA)
+                resultsListModel.append({
+                                          'section': 'BtoA',
+                                          'lang1': transBtoA[i][0],
+                                          'lang2': transBtoA[i][1]
+                                        })
+              listView.numberOfResultsAtoB = transAtoB.length
+              listView.numberOfResultsBtoA = transBtoA.length
+            }
+          }
+          Text {
+            id: no_results
+            anchors.top: queryField.bottom
+            x: Theme.horizontalPageMargin
+            width: parent.width - 2 * x
+            text: qsTr('No match in dictionary.')
+            font.italic: true
+            font.pointSize: Theme.fontSizeSmall
+            color: Theme.highlightColor
+            visible: resultsListModel.count === 0 && queryFieldText !== ''
+          }
         }
       }
     }
@@ -110,13 +117,20 @@ Page {
         rotation: 90
         id: bar
         height: parent.width
-        width: section === 'BtoA' && listView.numberOfResultsAtoB > 0  && listView.numberOfResultsBtoA > 0 ? Theme.paddingSmall : 0
+        width: section === 'BtoA' && listView.numberOfResultsAtoB > 0
+               && listView.numberOfResultsBtoA > 0 ? Theme.paddingSmall : 0
         radius: width / 3
         anchors.centerIn: parent
         opacity: 0.75
         gradient: Gradient {
-          GradientStop { position: 0.667; color: Theme.secondaryColor }
-          GradientStop { position: 0.0; color: "transparent" }
+          GradientStop {
+            position: 0.667
+            color: Theme.secondaryColor
+          }
+          GradientStop {
+            position: 0.0
+            color: 'transparent'
+          }
         }
       }
     }
@@ -228,6 +242,12 @@ Page {
           }
         }
       }
+    }
+  }
+
+  onStatusChanged: {
+    if (status === PageStatus.Active) {
+      listView.headerItem.forceActiveFocus()
     }
   }
 }
