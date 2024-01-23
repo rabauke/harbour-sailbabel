@@ -39,7 +39,7 @@ CoverBackground {
     }
     Text {
       anchors.bottom: parent.bottom
-      text: basename(dictionaryFile)
+      text: basename(appModel.currentDictionary)
       color: Theme.highlightColor
       font.pixelSize: Theme.fontSizeMedium
       wrapMode: Text.Wrap

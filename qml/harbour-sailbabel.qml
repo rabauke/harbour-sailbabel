@@ -17,7 +17,10 @@ ApplicationWindow {
       pageStack.replace('pages/MainPage.qml')
       pageStack.pushAttached('pages/History.qml')
     }
-    onReadingError: pageStack.replace('pages/Error.qml')
+    onReadingError: {
+      pageStack.replace('pages/Error.qml')
+      appModel.currentDictionary = ''
+    }
   }
 
   ListModel {
@@ -28,11 +31,9 @@ ApplicationWindow {
     id: resultsListModel
   }
 
-  property string dictionaryFile
+  property string queryFieldText: ''
 
-  property string queryFieldText:  ''
-
-  initialPage: Component { ChooseDictionary { } }
+  initialPage: appModel.autoLoadDictionary && appModel.currentDictionary !== '' ? Qt.resolvedUrl('pages/LoadDictionary.qml') : Qt.resolvedUrl('pages/ChooseDictionary.qml')
   cover: Qt.resolvedUrl('cover/CoverPage.qml')
   allowedOrientations: Orientation.All
   _defaultPageOrientations: Orientation.All

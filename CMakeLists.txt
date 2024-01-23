@@ -26,6 +26,7 @@ set(QML_FILES
     qml/pages/History.qml
     qml/pages/LoadDirectory.qml
     qml/pages/MainPage.qml
+    qml/pages/Settings.qml
     qml/components/QueryField.qml
     qml/harbour-sailbabel.qml
     qml/cover/CoverPage.qml

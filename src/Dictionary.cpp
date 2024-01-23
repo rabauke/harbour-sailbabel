@@ -11,7 +11,7 @@ Dictionary::Dictionary(QObject *parent) : QObject{parent} {
 }
 
 
-void Dictionary::read(const QString &filename) {
+void Dictionary::readAsync(const QString &filename) {
   QThread *thread{new QThread};
   DictionaryLoader *worker{new DictionaryLoader(*this, filename)};
   worker->moveToThread(thread);

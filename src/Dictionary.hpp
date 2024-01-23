@@ -24,7 +24,7 @@ public:
   Q_PROPERTY(int size READ size NOTIFY sizeChanged)
   Q_PROPERTY(bool dictionaryLoaded READ dictEmpty NOTIFY dictChanged)
 
-  Q_INVOKABLE void read(const QString &filename);
+  Q_INVOKABLE void readAsync(const QString &filename);
   Q_INVOKABLE QVariantList translateAtoB(const QString &query) const;
   Q_INVOKABLE QVariantList translateBtoA(const QString &query) const;
 

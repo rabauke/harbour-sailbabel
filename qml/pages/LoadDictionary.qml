@@ -19,7 +19,7 @@ Page {
     id: label1
     anchors.centerIn: parent
     anchors.verticalCenterOffset: 1.25 * busy.height
-    text: qsTr('Reading %1.').arg(basename(dictionaryFile))
+    text: qsTr('Reading %1.').arg(basename(appModel.currentDictionary))
     color: Theme.highlightColor
   }
   Label {
@@ -32,6 +32,6 @@ Page {
   }
   onStatusChanged: {
     if (status === PageStatus.Active)
-      dictionary.read(dictionaryFile)
+      dictionary.readAsync(appModel.currentDictionary)
   }
 }

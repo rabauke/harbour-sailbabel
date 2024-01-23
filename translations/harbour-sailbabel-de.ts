@@ -89,5 +89,20 @@
         <source>About SailBabel</source>
         <translation>Über SailBabel</translation>
     </message>
+    <message>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+</context>
+<context>
+    <name>Settings</name>
+    <message>
+        <source>Settings</source>
+        <translation>Einstellungen</translation>
+    </message>
+    <message>
+        <source>auto-load dictionary at program start-up</source>
+        <translation>Wörterbuch bei Programmstart automatisch laden</translation>
+    </message>
 </context>
 </TS>
