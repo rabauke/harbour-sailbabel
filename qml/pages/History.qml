@@ -62,7 +62,7 @@ Page {
             onClicked: {
               queryFieldText = searchHistoryListModel.get(model.index).query
               resultsListModel.clear()
-              var trans = dictionary.translateAtoB(queryFieldText)
+              var trans = appModel.dictionary.translateAtoB(queryFieldText)
               for (var i in trans)
                 resultsListModel.append({
                                           'lang1': trans[i][0],
@@ -73,7 +73,7 @@ Page {
                                           'lang1': '',
                                           'lang2': ''
                                         })
-              var trans = dictionary.translateBtoA(queryFieldText)
+              var trans = appModel.dictionary.translateBtoA(queryFieldText)
               for (var i in trans)
                 resultsListModel.append({
                                           'lang1': trans[i][0],

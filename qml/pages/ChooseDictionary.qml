@@ -55,7 +55,7 @@ Page {
         if (fileIsDir) {
           folderModel.folder = filePath
         } else {
-          appModel.currentDictionary = filePath
+          appModel.currentDictionary = 'file://' + filePath
           pageStack.replace('LoadDictionary.qml')
         }
       }

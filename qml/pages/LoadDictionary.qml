@@ -27,11 +27,11 @@ Page {
     anchors.horizontalCenter: label1.horizontalCenter
     anchors.top: label1.bottom
     anchors.topMargin: Theme.paddingMedium
-    text: qsTr('%n dictionary entries found.', '', dictionary.size)
+    text: qsTr('%n dictionary entries found.', '', appModel.dictionary.size)
     color: Theme.highlightColor
   }
   onStatusChanged: {
     if (status === PageStatus.Active)
-      dictionary.readAsync(appModel.currentDictionary)
+      appModel.dictionary.readAsync(appModel.currentDictionary)
   }
 }

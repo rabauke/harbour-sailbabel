@@ -74,8 +74,8 @@ Page {
                                                 'query': text
                                               })
               resultsListModel.clear()
-              var transAtoB = dictionary.translateAtoB(text)
-              var transBtoA = dictionary.translateBtoA(text)
+              var transAtoB = appModel.dictionary.translateAtoB(text)
+              var transBtoA = appModel.dictionary.translateBtoA(text)
               var i
               for (i in transAtoB)
                 resultsListModel.append({

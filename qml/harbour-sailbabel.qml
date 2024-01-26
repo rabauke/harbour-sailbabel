@@ -9,16 +9,13 @@ ApplicationWindow {
 
   AppModel {
     id: appModel
-  }
 
-  Dictionary {
-    id: dictionary
-    onReadingFinished: {
-      pageStack.replace('pages/MainPage.qml')
-      pageStack.pushAttached('pages/History.qml')
+    onReadingDictionaryFinished: {
+      pageStack.replace(Qt.resolvedUrl('pages/MainPage.qml'))
+      pageStack.pushAttached(Qt.resolvedUrl('pages/History.qml'))
     }
-    onReadingError: {
-      pageStack.replace('pages/Error.qml')
+    onReadingDictionaryFailed: {
+      pageStack.replace(Qt.resolvedUrl('pages/Error.qml'))
       appModel.currentDictionary = ''
     }
   }

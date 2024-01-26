@@ -5,15 +5,16 @@
 #include <QSet>
 #include <QRegularExpression>
 #include <QMutexLocker>
+#include <QDebug>
 
 
 Dictionary::Dictionary(QObject *parent) : QObject{parent} {
 }
 
 
-void Dictionary::readAsync(const QString &filename) {
+void Dictionary::readAsync(const QUrl &filename) {
   QThread *thread{new QThread};
-  DictionaryLoader *worker{new DictionaryLoader(*this, filename)};
+  DictionaryLoader *worker{new DictionaryLoader(*this, filename.toLocalFile())};
   worker->moveToThread(thread);
   connect(worker, &DictionaryLoader::error, this, [this]() { emit readingError(); });
   connect(thread, &QThread::started, worker, &DictionaryLoader::process);

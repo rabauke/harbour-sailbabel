@@ -7,6 +7,7 @@
 #include <QtQmlIntegration>
 #endif
 #include "Version.h"
+#include "Dictionary.hpp"
 
 
 class AppModel : public QObject {
@@ -25,10 +26,13 @@ public:
                  NOTIFY currentDictionaryChanged)
   Q_PROPERTY(bool autoLoadDictionary READ get_auto_load_dictionary WRITE
                  set_auto_load_dictionary NOTIFY autoLoadDictionaryChanged)
+  Q_PROPERTY(Dictionary* dictionary READ get_dictionary CONSTANT)
 
 signals:
   void currentDictionaryChanged();
   void autoLoadDictionaryChanged();
+  void readingDictionaryFinished();
+  void readingDictionaryFailed();
 
 private:
   QString get_current_dictionary() const;
@@ -37,7 +41,10 @@ private:
   bool get_auto_load_dictionary() const;
   void set_auto_load_dictionary(bool auto_load_dictionary);
 
+  Dictionary* get_dictionary();
+
   QString m_version{QString::fromStdString(project_version)};
   QString m_current_dictionary;
   bool m_auto_load_dictionary{true};
+  Dictionary m_dictionary;
 };

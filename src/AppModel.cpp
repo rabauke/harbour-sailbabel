@@ -32,6 +32,12 @@ AppModel::AppModel(QObject* parent) : QObject{parent} {
   const QVariant auto_load_dictionary{settings.value("autoLoadDictionary")};
   if (auto_load_dictionary.canConvert<bool>())
     m_auto_load_dictionary = auto_load_dictionary.toBool();
+
+  connect(&m_dictionary, &Dictionary::readingFinished, this,
+          [this]() { emit readingDictionaryFinished(); });
+  connect(&m_dictionary, &Dictionary::readingError, this, [this]() {
+    emit readingDictionaryFailed();
+  });
 }
 
 
@@ -69,4 +75,9 @@ void AppModel::set_auto_load_dictionary(bool auto_load_dictionary) {
     m_auto_load_dictionary = auto_load_dictionary;
     emit autoLoadDictionaryChanged();
   }
+}
+
+
+Dictionary* AppModel::get_dictionary() {
+  return &m_dictionary;
 }
