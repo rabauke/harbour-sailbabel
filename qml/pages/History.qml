@@ -39,10 +39,46 @@ Page {
     model: searchHistoryListModel
 
     delegate: ListItem {
+      id: listItem
       width: parent.width
       contentWidth: parent.width
       contentHeight: query_text.height + Theme.paddingLarge
-      menu: contextMenu
+
+      menu: ContextMenu {
+        MenuItem {
+          text: qsTr('Search again')
+          onClicked: {
+            queryFieldText = searchHistoryListModel.get(model.index).query
+            resultsListModel.clear()
+            var transAtoB = appModel.dictionary.translateAtoB(queryFieldText)
+            var transBtoA = appModel.dictionary.translateBtoA(queryFieldText)
+            var i
+            for (i in transAtoB)
+              resultsListModel.append({
+                                        'section': 'AtoB',
+                                        'lang1': transAtoB[i][0],
+                                        'lang2': transAtoB[i][1]
+                                      })
+            for (i in transBtoA)
+              resultsListModel.append({
+                                        'section': 'BtoA',
+                                        'lang1': transBtoA[i][0],
+                                        'lang2': transBtoA[i][1]
+                                      })
+            numberOfResultsAtoB = transAtoB.length
+            numberOfResultsBtoA = transBtoA.length
+            queryFieldText = searchHistoryListModel.get(model.index).query
+            pageStack.navigateBack()
+          }
+        }
+        MenuItem {
+          text: qsTr('Remove query')
+          onClicked: listItem.remorseDelete(function () {
+            searchHistoryListModel.remove(model.index)
+          })
+        }
+      }
+
       Text {
         id: query_text
         x: Theme.horizontalPageMargin
@@ -53,41 +89,6 @@ Page {
         font.pixelSize: Theme.fontSizeMedium
         horizontalAlignment: TextEdit.AlignLeft
         text: query
-      }
-      Component {
-        id: contextMenu
-        ContextMenu {
-          MenuItem {
-            text: qsTr('Search again')
-            onClicked: {
-              queryFieldText = searchHistoryListModel.get(model.index).query
-              resultsListModel.clear()
-              var transAtoB = appModel.dictionary.translateAtoB(queryFieldText)
-              var transBtoA = appModel.dictionary.translateBtoA(queryFieldText)
-              var i
-              for (i in transAtoB)
-                resultsListModel.append({
-                                          'section': 'AtoB',
-                                          'lang1': transAtoB[i][0],
-                                          'lang2': transAtoB[i][1]
-                                        })
-              for (i in transBtoA)
-                resultsListModel.append({
-                                          'section': 'BtoA',
-                                          'lang1': transBtoA[i][0],
-                                          'lang2': transBtoA[i][1]
-                                        })
-              numberOfResultsAtoB = transAtoB.length
-              numberOfResultsBtoA = transBtoA.length
-              queryFieldText = searchHistoryListModel.get(model.index).query
-              pageStack.navigateBack()
-            }
-          }
-          MenuItem {
-            text: qsTr('Remove query')
-            onClicked: searchHistoryListModel.remove(model.index)
-          }
-        }
       }
     }
   }
