@@ -62,23 +62,24 @@ Page {
             onClicked: {
               queryFieldText = searchHistoryListModel.get(model.index).query
               resultsListModel.clear()
-              var trans = appModel.dictionary.translateAtoB(queryFieldText)
-              for (var i in trans)
+              var transAtoB = appModel.dictionary.translateAtoB(queryFieldText)
+              var transBtoA = appModel.dictionary.translateBtoA(queryFieldText)
+              var i
+              for (i in transAtoB)
                 resultsListModel.append({
-                                          'lang1': trans[i][0],
-                                          'lang2': trans[i][1]
+                                          'section': 'AtoB',
+                                          'lang1': transAtoB[i][0],
+                                          'lang2': transAtoB[i][1]
                                         })
-              if (trans.length > 0)
+              for (i in transBtoA)
                 resultsListModel.append({
-                                          'lang1': '',
-                                          'lang2': ''
+                                          'section': 'BtoA',
+                                          'lang1': transBtoA[i][0],
+                                          'lang2': transBtoA[i][1]
                                         })
-              var trans = appModel.dictionary.translateBtoA(queryFieldText)
-              for (var i in trans)
-                resultsListModel.append({
-                                          'lang1': trans[i][0],
-                                          'lang2': trans[i][1]
-                                        })
+              numberOfResultsAtoB = transAtoB.length
+              numberOfResultsBtoA = transBtoA.length
+              queryFieldText = searchHistoryListModel.get(model.index).query
               pageStack.navigateBack()
             }
           }

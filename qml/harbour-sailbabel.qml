@@ -20,15 +20,18 @@ ApplicationWindow {
     }
   }
 
-  ListModel {
-    id: searchHistoryListModel
-  }
+  property string queryFieldText: ''
 
   ListModel {
     id: resultsListModel
   }
 
-  property string queryFieldText: ''
+  property int numberOfResultsAtoB: 0
+  property int numberOfResultsBtoA: 0
+
+  ListModel {
+    id: searchHistoryListModel
+  }
 
   initialPage: appModel.autoLoadDictionary && appModel.currentDictionary !== '' ? Qt.resolvedUrl('pages/LoadDictionary.qml') : Qt.resolvedUrl('pages/ChooseDictionary.qml')
   cover: Qt.resolvedUrl('cover/CoverPage.qml')

@@ -9,9 +9,6 @@ Page {
   SilicaListView {
     id: listView
 
-    property int numberOfResultsAtoB: 0
-    property int numberOfResultsBtoA: 0
-
     anchors.fill: parent
 
     VerticalScrollDecorator {
@@ -60,7 +57,7 @@ Page {
             text: queryFieldText
             focus: true
             placeholderText: qsTr('Word or phrase')
-            inputMethodHints: Qt.ImhNoAutoUppercase
+            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
             EnterKey.iconSource: 'image://theme/icon-m-enter-next'
             EnterKey.enabled: text.length > 0
             EnterKey.onClicked: {
@@ -69,13 +66,13 @@ Page {
                                                          '').replace(/\s*$/g,
                                                                      '')
               if (searchHistoryListModel.count === 0
-                  || searchHistoryListModel.get(0).query !== text)
+                  || searchHistoryListModel.get(0).query !== queryFieldText)
                 searchHistoryListModel.insert(0, {
-                                                'query': text
+                                                'query': queryFieldText
                                               })
               resultsListModel.clear()
-              var transAtoB = appModel.dictionary.translateAtoB(text)
-              var transBtoA = appModel.dictionary.translateBtoA(text)
+              var transAtoB = appModel.dictionary.translateAtoB(queryFieldText)
+              var transBtoA = appModel.dictionary.translateBtoA(queryFieldText)
               var i
               for (i in transAtoB)
                 resultsListModel.append({
@@ -89,8 +86,14 @@ Page {
                                           'lang1': transBtoA[i][0],
                                           'lang2': transBtoA[i][1]
                                         })
-              listView.numberOfResultsAtoB = transAtoB.length
-              listView.numberOfResultsBtoA = transBtoA.length
+              numberOfResultsAtoB = transAtoB.length
+              numberOfResultsBtoA = transBtoA.length
+            }
+
+            Binding {
+              target: queryField
+              property: 'text'
+              value: queryFieldText
             }
           }
           Text {
@@ -121,8 +124,8 @@ Page {
         rotation: 90
         id: bar
         height: parent.width
-        width: section === 'BtoA' && listView.numberOfResultsAtoB > 0
-               && listView.numberOfResultsBtoA > 0 ? Theme.paddingSmall : 0
+        width: section === 'BtoA' && numberOfResultsAtoB > 0
+               && numberOfResultsBtoA > 0 ? Theme.paddingSmall : 0
         radius: width / 3
         anchors.centerIn: parent
         opacity: 0.75
