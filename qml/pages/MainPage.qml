@@ -57,7 +57,7 @@ Page {
             text: queryFieldText
             focus: true
             placeholderText: qsTr('Word or phrase')
-            inputMethodHints: Qt.ImhNoAutoUppercase | Qt.ImhNoPredictiveText
+            inputMethodHints: Qt.ImhNoAutoUppercase
             EnterKey.iconSource: 'image://theme/icon-m-enter-next'
             EnterKey.enabled: text.length > 0
             EnterKey.onClicked: {
