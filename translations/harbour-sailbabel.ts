@@ -26,8 +26,16 @@
 <context>
     <name>Error</name>
     <message>
-        <source>_error_description_</source>
-        <translation>SailBabel is an offline dictionary for Sailfish OS.  Note that this program does not include translations or wordlists.  Just copy your own set of translations to a text file in the sub-folder Dictionaries within the documents directory.  This file is expected to contain two tab-separated columns each containing a word or phrase in one language and its translation into another language, respectively.  Dictionary text files may be obtained from &lt;a href=&quot;http://www1.dict.cc/translation_file_request.php?l=e&quot;&gt;http://www.dict.cc&lt;/a&gt; for personal use.</translation>
+        <source>Error</source>
+        <translation>Error</translation>
+    </message>
+    <message>
+        <source>Unable to open dictionary.</source>
+        <translation>Unable to open dictionary.</translation>
+    </message>
+    <message>
+        <source>Ok</source>
+        <translation>Ok</translation>
     </message>
 </context>
 <context>
