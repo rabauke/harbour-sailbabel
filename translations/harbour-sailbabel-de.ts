@@ -71,8 +71,8 @@
         </translation>
     </message>
     <message>
-        <source>Reading %1.</source>
-        <translation>Lese %1.</translation>
+        <source>Reading “%1”.</source>
+        <translation>Lese „%1“.</translation>
     </message>
 </context>
 <context>
